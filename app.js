@@ -1,11 +1,69 @@
-const STORAGE_KEY = "signal-to-case-management-prototype:v2";
-const TODAY_ISO = "2026-07-08";
-const TODAY_LABEL = "2026年7月8日";
+const STORAGE_KEY = "business-flow-signal-management-prototype:v1";
+const TODAY_ISO = "2026-07-10";
+const TODAY_LABEL = "2026年7月10日";
 
 const labels = {
-  caseType: {
-    project: "プロジェクト型",
-    routine: "定型業務型",
+  requestStatus: {
+    received: "相談受付",
+    checking: "情報確認中",
+    waiting_estimate_request: "見積依頼待ち",
+    estimating: "見積中",
+    waiting_budget: "予算化待ち",
+    likely_order: "発注見込み",
+    on_hold: "保留",
+    closed: "終了",
+  },
+  background: {
+    aging: "老朽化",
+    law_change: "法改正",
+    policy_change: "方針変更",
+    improvement: "改善",
+    trouble: "障害・トラブル",
+    other: "その他",
+  },
+  roughSize: {
+    small: "小",
+    medium: "中",
+    large: "大",
+    very_large: "特大",
+  },
+  budgetPlan: {
+    yes: "あり",
+    considering: "検討中",
+    unknown: "未定",
+    no: "なし",
+  },
+  estimateType: {
+    rough: "超概算",
+    conceptual: "概算",
+    revised_conceptual: "改訂概算",
+    formal: "正式見積",
+    quarterly: "四半期見積",
+    additional: "追加見積",
+  },
+  estimateStatus: {
+    draft: "作成中",
+    review: "レビュー中",
+    submitted: "提出済み",
+    feedback: "指摘対応中",
+    confirmed: "確定",
+    rejected: "差戻し",
+    on_hold: "保留",
+  },
+  explanationQuality: {
+    weak: "弱い",
+    normal: "普通",
+    strong: "強い",
+  },
+  riskLevel: {
+    low: "低",
+    medium: "中",
+    high: "高",
+  },
+  statusLevel: {
+    normal: "正常",
+    attention: "注意",
+    critical: "危険",
   },
   overallStatus: {
     normal: "正常",
@@ -13,26 +71,10 @@ const labels = {
     critical: "危険",
     completed: "完了",
   },
-  statusLevel: {
-    normal: "正常",
-    attention: "注意",
-    critical: "危険",
-  },
   trend: {
     improving: "改善",
     stable: "横ばい",
     worsening: "悪化",
-  },
-  importance: {
-    high: "高",
-    medium: "中",
-    low: "低",
-  },
-  nextReportTo: {
-    none: "なし",
-    section_meeting: "課内会議",
-    division_management_meeting: "本部基幹職会議",
-    executive_meeting: "幹部会",
   },
   supportNeeded: {
     none: "なし",
@@ -42,26 +84,59 @@ const labels = {
     budget: "予算",
     other: "その他",
   },
-  signalSource: {
-    manual: "手入力",
-    attendance: "勤怠",
-    seat: "座席",
-    meeting: "会議資料",
-    document: "文書",
-    worklog: "工数",
-    system: "既存システム",
+  reportTo: {
+    none: "なし",
+    department: "部内確認",
+    division: "本部長確認候補",
+    executive: "幹部会報告候補",
+  },
+  projectPlanType: {
+    milestone: "マイルストーン",
+    meeting: "会議",
+    estimate: "見積",
+    release: "リリース",
+    customer: "顧客確認",
+    audit: "監査対応",
+    other: "その他",
+  },
+  projectPlanStatus: {
+    planned: "予定",
+    at_risk: "注意",
+    delayed: "遅延",
+    done: "完了",
+  },
+  operationStatus: {
+    stable: "安定",
+    attention: "注意",
+    high_load: "高負荷",
+    audit: "監査対応中",
+    aging_attention: "老朽化注意",
+  },
+  operationHistoryType: {
+    memo: "保守メモ",
+    inquiry: "問い合わせ",
+    incident: "障害",
+    small_change: "小改修",
+    audit: "監査対応",
+  },
+  phase: {
+    request: "相談～見積（相談）",
+    estimate: "相談～見積（見積）",
+    project: "プロジェクト",
+    operation: "保守・運用",
   },
   signalCategory: {
     profitability: "採算",
-    schedule: "納期",
-    quality: "品質",
     staffing: "要員",
+    estimate: "見積",
+    quality: "品質",
+    schedule: "納期",
     customer: "顧客",
+    audit: "監査",
+    dependency: "属人化",
+    aging: "老朽化",
     organization: "組織コンディション",
-    deadline: "期限",
-    approval: "承認",
-    hybrid_work: "ハイブリッド勤務",
-    estimate: "見積・要件",
+    operation: "保守運用",
     other: "その他",
   },
   severity: {
@@ -78,39 +153,140 @@ const labels = {
     new: "新規",
     watching: "ウォッチ継続",
     attention: "要注意",
-    converted_to_case: "案件化済み",
     closed: "クローズ",
   },
 };
 
 const departments = [
-  "第1開発部",
+  "第1開発課",
   "第2開発課",
-  "第3開発課",
+  "経理システム課",
   "インフラ部",
   "クラウド推進部",
-  "情報システム部",
   "運用部",
   "品質管理部",
-  "経営企画部",
-  "経理部",
-  "人事部",
-  "営業部",
-  "総務部",
 ];
 
 const sampleQuestions = [
-  "現在、危険状態のプロジェクト型案件は？",
-  "二桁億円規模で悪化傾向の案件は？",
-  "要員不足シグナルが多い案件は？",
-  "採算危険になりそうな案件は？",
-  "前月から悪化した案件は？",
-  "幹部会に上げるべき案件候補は？",
-  "期限が危ない定型業務型案件は？",
-  "予算策定でどの工程が遅れている？",
-  "承認待ちで止まっている案件は？",
+  "今後6か月で要員不足になりそうな相談は？",
+  "見積回数が多く現場負荷が高いものは？",
+  "根拠が弱い見積は？",
+  "採算悪化しそうなプロジェクトは？",
+  "PM報告では問題なしだが、客観的には注意すべき案件は？",
   "要注意シグナルが増えている部門は？",
+  "保守運用負荷が高いシステムは？",
+  "J-SOX監査対応が重いシステムは？",
+  "幹部会に上げるべきものは？",
 ];
+
+const executiveDashboardItems = {
+  revenueForecast: { group: "demand", label: "12か月予測売上", defaultVisible: true },
+  monthlyWorkload: { group: "demand", label: "月別業務量", defaultVisible: true },
+  budgetGap: { group: "demand", label: "年度予算との差", defaultVisible: false },
+  confidenceBreakdown: { group: "demand", label: "受注確度別内訳", defaultVisible: false },
+  largeDealCandidates: { group: "demand", label: "大型案件候補", defaultVisible: false },
+  monthlyStaffingGap: { group: "staffing", label: "月別要員過不足", defaultVisible: true },
+  skillShortage: { group: "staffing", label: "スキル別不足", defaultVisible: true },
+  departmentLoad: { group: "staffing", label: "部門別負荷", defaultVisible: false },
+  pmMultiAssign: { group: "staffing", label: "PM兼務状況", defaultVisible: false },
+  substituteShortage: { group: "staffing", label: "代替要員不足", defaultVisible: false },
+  outsourcingNeed: { group: "partner", label: "外注必要人月", defaultVisible: true },
+  partnerRecommendation: { group: "partner", label: "推奨パートナー", defaultVisible: true },
+  partnerCapacity: { group: "partner", label: "パートナー別供給余力", defaultVisible: false },
+  outsourcingCost: { group: "partner", label: "外注費予測", defaultVisible: false },
+  partnerConcentration: { group: "partner", label: "パートナー集中リスク", defaultVisible: false },
+  profitRiskProjects: { group: "profitability", label: "採算危険案件", defaultVisible: true },
+  worseningProjects: { group: "profitability", label: "悪化案件", defaultVisible: true },
+  effortOverrun: { group: "profitability", label: "工数超過案件", defaultVisible: false },
+  additionalEstimatePending: { group: "profitability", label: "追加見積未合意", defaultVisible: false },
+  pmReportGap: { group: "profitability", label: "PM報告とのずれ", defaultVisible: false },
+  majorIncidents: { group: "incident", label: "対応中重大障害", defaultVisible: true },
+  overdueIncidentActions: { group: "incident", label: "期限超過対応", defaultVisible: true },
+  temporaryRecoveryOnly: { group: "incident", label: "暫定復旧のみ", defaultVisible: false },
+  recurrencePreventionOpen: { group: "incident", label: "再発防止未完了", defaultVisible: false },
+  jsoxIncidents: { group: "incident", label: "J-SOX影響障害", defaultVisible: false },
+};
+
+const executiveDashboardGroups = [
+  ["demand", "需要・売上見通し"],
+  ["staffing", "正社員要員"],
+  ["partner", "外注・パートナー最適化"],
+  ["profitability", "プロジェクト採算・健全性"],
+  ["incident", "重大障害・重要トラブル"],
+];
+
+const executiveDashboardPresets = {
+  company: {
+    name: "全社経営ビュー",
+    items: [
+      "revenueForecast",
+      "monthlyWorkload",
+      "monthlyStaffingGap",
+      "skillShortage",
+      "outsourcingNeed",
+      "partnerRecommendation",
+      "profitRiskProjects",
+      "worseningProjects",
+      "majorIncidents",
+      "overdueIncidentActions",
+    ],
+  },
+  demandStaffing: {
+    name: "需要・要員ビュー",
+    items: [
+      "revenueForecast",
+      "monthlyWorkload",
+      "confidenceBreakdown",
+      "monthlyStaffingGap",
+      "skillShortage",
+      "substituteShortage",
+      "outsourcingNeed",
+    ],
+  },
+  partner: {
+    name: "外注最適化ビュー",
+    items: [
+      "outsourcingNeed",
+      "partnerRecommendation",
+      "partnerCapacity",
+      "outsourcingCost",
+      "partnerConcentration",
+      "departmentLoad",
+    ],
+  },
+  profitability: {
+    name: "採算管理ビュー",
+    items: [
+      "profitRiskProjects",
+      "worseningProjects",
+      "effortOverrun",
+      "additionalEstimatePending",
+      "pmReportGap",
+    ],
+  },
+  incidents: {
+    name: "重大障害ビュー",
+    items: [
+      "majorIncidents",
+      "overdueIncidentActions",
+      "temporaryRecoveryOnly",
+      "recurrencePreventionOpen",
+      "jsoxIncidents",
+    ],
+  },
+  executiveMeeting: {
+    name: "幹部会前ビュー",
+    items: [
+      "budgetGap",
+      "monthlyStaffingGap",
+      "outsourcingNeed",
+      "profitRiskProjects",
+      "pmReportGap",
+      "majorIncidents",
+      "overdueIncidentActions",
+    ],
+  },
+};
 
 let state = loadState();
 
@@ -120,482 +296,598 @@ document.addEventListener("submit", handleSubmit);
 render();
 
 function buildInitialData() {
-  const cases = [];
-  const projectDetails = [];
-  const routineDetails = [];
-
-  const projectSeeds = [
+  const requests = [
     {
-      caseName: "A社基幹システム更改",
-      customerName: "A社",
-      contractAmount: 850000000,
+      id: "REQ-001",
+      requestCode: "REQ-001",
+      title: "生産管理システム老朽化対応",
+      requesterCompany: "製造A社",
+      background: "aging",
+      targetSystem: "生産管理システム",
+      department: "第1開発課",
+      desiredTiming: "2027年度上期",
+      roughSize: "large",
+      budgetPlan: "considering",
+      status: "estimating",
+      summary: "現行基盤の老朽化により更改相談。J-SOX対象範囲と移行方式の確認が必要。",
+      expectedSkill: "生産管理、データ移行、J-SOX対応",
+      nextAction: "第2版概算の前提条件を依頼元と確認",
+      attentionSignalCount: 2,
+      lastUpdatedAt: "2026-07-08",
+    },
+    {
+      id: "REQ-002",
+      requestCode: "REQ-002",
+      title: "法改正に伴う会計システム改修",
+      requesterCompany: "グループ経理部",
+      background: "law_change",
+      targetSystem: "会計システム",
+      department: "経理システム課",
+      desiredTiming: "2026年度下期",
+      roughSize: "medium",
+      budgetPlan: "yes",
+      status: "waiting_budget",
+      summary: "法改正対応の正式見積は確定。予算化と監査証跡範囲の確認待ち。",
+      expectedSkill: "会計、税制、監査証跡",
+      nextAction: "予算化判断と監査対応範囲の合意",
+      attentionSignalCount: 1,
+      lastUpdatedAt: "2026-07-05",
+    },
+    {
+      id: "REQ-003",
+      requestCode: "REQ-003",
+      title: "グループ方針変更に伴う認証基盤刷新",
+      requesterCompany: "親会社IT企画部",
+      background: "policy_change",
+      targetSystem: "認証基盤",
+      department: "インフラ部",
+      desiredTiming: "2027年度",
+      roughSize: "large",
+      budgetPlan: "unknown",
+      status: "received",
+      summary: "グループ標準方針変更に伴う初期相談。対象範囲と既存連携数の洗い出し前。",
+      expectedSkill: "認証、ネットワーク、ゼロトラスト",
+      nextAction: "対象システムと外部連携の棚卸し",
+      attentionSignalCount: 1,
+      lastUpdatedAt: "2026-07-01",
+    },
+  ];
+
+  const requestHistories = [
+    {
+      id: "RH-001",
+      requestId: "REQ-001",
+      date: "2026-07-01",
+      title: "初回相談",
+      memo: "老朽化により来年度更改を検討。現行保守期限も確認が必要。",
+      createdBy: "田中",
+    },
+    {
+      id: "RH-002",
+      requestId: "REQ-001",
+      date: "2026-07-08",
+      title: "追加確認",
+      memo: "J-SOX対象であることが判明。監査証跡の移行範囲を前提条件に追加。",
+      createdBy: "田中",
+    },
+    {
+      id: "RH-003",
+      requestId: "REQ-001",
+      date: "2026-07-15",
+      title: "概算見積依頼",
+      memo: "依頼元より予算化のため概算見積依頼あり。",
+      createdBy: "山田",
+    },
+    {
+      id: "RH-004",
+      requestId: "REQ-002",
+      date: "2026-06-20",
+      title: "法改正対応相談",
+      memo: "制度施行時期から逆算し、下期改修が必要と整理。",
+      createdBy: "佐藤",
+    },
+    {
+      id: "RH-005",
+      requestId: "REQ-003",
+      date: "2026-07-01",
+      title: "方針変更の共有",
+      memo: "親会社IT企画部より認証基盤刷新の初期相談あり。",
+      createdBy: "鈴木",
+    },
+  ];
+
+  const estimates = [
+    {
+      id: "EST-001",
+      estimateCode: "EST-001",
+      requestId: "REQ-001",
+      projectId: "",
+      title: "生産管理システム老朽化対応 第1版概算",
+      version: 1,
+      estimateType: "rough",
+      amount: 30000000,
+      personMonths: 18,
+      assumptions: "現行機能の単純更改を前提。外部連携と移行データ量は未確定。",
+      exclusions: "詳細なデータクレンジング、J-SOX証跡移行、周辺システム改修は除外。",
+      riskLevel: "high",
+      status: "submitted",
+      dueDate: "2026-07-04",
+      submittedDate: "2026-07-04",
+      explanationQuality: "weak",
+      feedbackCount: 1,
+      createdBy: "田中",
+    },
+    {
+      id: "EST-002",
+      estimateCode: "EST-002",
+      requestId: "REQ-001",
+      projectId: "",
+      title: "生産管理システム老朽化対応 第2版概算",
+      version: 2,
+      estimateType: "conceptual",
+      amount: 42000000,
+      personMonths: 25,
+      assumptions: "外部連携8本、利用部門5部門、J-SOX対象範囲を含める前提。",
+      exclusions: "追加帳票、周辺部門の運用変更、長期並行稼働費用は別見積。",
+      riskLevel: "medium",
+      status: "review",
+      dueDate: "2026-07-18",
+      submittedDate: "",
+      explanationQuality: "normal",
+      feedbackCount: 0,
+      createdBy: "田中",
+    },
+    {
+      id: "EST-003",
+      estimateCode: "EST-003",
+      requestId: "REQ-002",
+      projectId: "",
+      title: "会計システム法改正対応 正式見積",
+      version: 1,
+      estimateType: "formal",
+      amount: 18000000,
+      personMonths: 12,
+      assumptions: "法改正対象帳票と税率判定ロジックの改修を対象。",
+      exclusions: "会計制度全体の見直し、既存データ補正は除外。",
+      riskLevel: "low",
+      status: "confirmed",
+      dueDate: "2026-07-10",
+      submittedDate: "2026-07-08",
+      explanationQuality: "strong",
+      feedbackCount: 0,
+      createdBy: "佐藤",
+    },
+  ];
+
+  const estimateHistories = [
+    {
+      id: "EH-001",
+      estimateId: "EST-001",
+      date: "2026-07-04",
+      title: "第1版提出",
+      memo: "超概算として3,000万円を提示。根拠粒度が粗く、依頼元から追加説明を求められた。",
+      createdBy: "田中",
+    },
+    {
+      id: "EH-002",
+      estimateId: "EST-002",
+      date: "2026-07-11",
+      title: "第2版レビュー開始",
+      memo: "外部連携数と利用部門数を前提に追加。J-SOX範囲は依頼元確認中。",
+      createdBy: "山田",
+    },
+    {
+      id: "EH-003",
+      estimateId: "EST-003",
+      date: "2026-07-08",
+      title: "正式見積確定",
+      memo: "法改正対象範囲が明確なため、正式見積として確定。",
+      createdBy: "佐藤",
+    },
+  ];
+
+  const projects = [
+    {
+      id: "PRJ-001",
+      projectCode: "PRJ-001",
+      title: "A社基幹システム更改",
+      requestId: "REQ-001",
+      requesterCompany: "製造A社",
+      department: "第1開発課",
+      owner: "第1開発部長",
+      pm: "山田",
+      amount: 850000000,
       startDate: "2025-04",
       plannedEndDate: "2027-03",
-      department: "第1開発部",
-      owner: "第1本部長",
-      manager: "山田",
-      status: "critical",
-      trend: "worsening",
-      importance: "high",
-      nextReportTo: "executive_meeting",
       currentPhase: "基本設計",
-      profitabilityStatus: "critical",
+      overallStatus: "critical",
+      trend: "worsening",
       scheduleStatus: "attention",
+      profitabilityStatus: "critical",
       qualityStatus: "attention",
       staffingStatus: "critical",
       customerStatus: "attention",
       attentionSignalCount: 3,
-      changeRequestCount: 12,
-      openIssueCount: 18,
-      milestoneStatus: "主要工程が2週間遅延",
-      latestComment: "仕様変更と追加見積未合意が重なり、採算と要員が危険水準です。",
-      supportNeeded: "executive_decision",
+      estimateRevisionCount: 4,
+      nextReportTo: "executive",
+      lastUpdatedAt: "2026-07-08",
+      latestComment: "追加見積の合意が取れておらず、採算と要員が危険水準。",
     },
     {
-      caseName: "B社インフラ刷新",
-      customerName: "B社",
-      contractAmount: 220000000,
-      startDate: "2026-01",
-      plannedEndDate: "2026-12",
+      id: "PRJ-002",
+      projectCode: "PRJ-002",
+      title: "B社インフラ刷新",
+      requestId: "",
+      requesterCompany: "B社",
       department: "インフラ部",
       owner: "インフラ部長",
-      manager: "佐藤",
-      status: "attention",
-      trend: "stable",
-      importance: "medium",
-      nextReportTo: "division_management_meeting",
+      pm: "鈴木",
+      amount: 220000000,
+      startDate: "2026-01",
+      plannedEndDate: "2026-12",
       currentPhase: "検証",
-      profitabilityStatus: "normal",
+      overallStatus: "attention",
+      trend: "stable",
       scheduleStatus: "normal",
+      profitabilityStatus: "normal",
       qualityStatus: "attention",
       staffingStatus: "attention",
       customerStatus: "normal",
       attentionSignalCount: 1,
-      changeRequestCount: 3,
-      openIssueCount: 7,
-      milestoneStatus: "検証環境の安定化待ち",
-      latestComment: "検証環境の不具合はあるが、全体計画は維持できています。",
-      supportNeeded: "staffing",
+      estimateRevisionCount: 2,
+      nextReportTo: "division",
+      lastUpdatedAt: "2026-07-05",
+      latestComment: "検証環境の安定化待ち。要員支援があれば計画維持可能。",
     },
     {
-      caseName: "C社クラウド移行",
-      customerName: "C社",
-      contractAmount: 110000000,
-      startDate: "2026-04",
-      plannedEndDate: "2027-09",
+      id: "PRJ-003",
+      projectCode: "PRJ-003",
+      title: "C社クラウド移行",
+      requestId: "",
+      requesterCompany: "C社",
       department: "クラウド推進部",
       owner: "クラウド推進部長",
-      manager: "鈴木",
-      status: "normal",
-      trend: "stable",
-      importance: "medium",
-      nextReportTo: "none",
+      pm: "森",
+      amount: 110000000,
+      startDate: "2026-04",
+      plannedEndDate: "2027-09",
       currentPhase: "要件定義",
-      profitabilityStatus: "normal",
+      overallStatus: "normal",
+      trend: "stable",
       scheduleStatus: "normal",
+      profitabilityStatus: "normal",
       qualityStatus: "normal",
       staffingStatus: "normal",
       customerStatus: "normal",
       attentionSignalCount: 0,
-      changeRequestCount: 1,
-      openIssueCount: 2,
-      milestoneStatus: "計画通り",
-      latestComment: "現時点では大きな懸念なし。",
-      supportNeeded: "none",
-    },
-    {
-      caseName: "社内セキュリティ基盤導入",
-      customerName: "社内",
-      contractAmount: 90000000,
-      startDate: "2026-02",
-      plannedEndDate: "2026-11",
-      department: "情報システム部",
-      owner: "情シス部長",
-      manager: "高橋",
-      status: "attention",
-      trend: "worsening",
-      importance: "high",
-      nextReportTo: "division_management_meeting",
-      currentPhase: "詳細設計",
-      profitabilityStatus: "normal",
-      scheduleStatus: "attention",
-      qualityStatus: "attention",
-      staffingStatus: "attention",
-      customerStatus: "normal",
-      attentionSignalCount: 2,
-      changeRequestCount: 4,
-      openIssueCount: 9,
-      milestoneStatus: "運用設計の合意が遅れ気味",
-      latestComment: "要員と品質の注意シグナルが増えています。",
-      supportNeeded: "staffing",
-    },
-    {
-      caseName: "M社次世代基幹システム刷新",
-      customerName: "M社",
-      contractAmount: 1450000000,
-      startDate: "2025-10",
-      plannedEndDate: "2028-03",
-      department: "第1開発部",
-      owner: "第1本部長",
-      manager: "森",
-      status: "critical",
-      trend: "worsening",
-      importance: "high",
-      nextReportTo: "executive_meeting",
-      currentPhase: "要件再整理",
-      profitabilityStatus: "critical",
-      scheduleStatus: "critical",
-      qualityStatus: "attention",
-      staffingStatus: "critical",
-      customerStatus: "critical",
-      attentionSignalCount: 5,
-      changeRequestCount: 21,
-      openIssueCount: 32,
-      milestoneStatus: "要件凍結が未完了",
-      latestComment: "二桁億円規模で顧客合意と採算の両方が悪化しています。",
-      supportNeeded: "executive_decision",
-    },
-  ];
-
-  const generatedProjectNames = [
-    ["D社EC基盤刷新", "D社", 180000000, "第1開発部"],
-    ["E社データ分析基盤構築", "E社", 260000000, "クラウド推進部"],
-    ["F社CRM統合", "F社", 140000000, "第1開発部"],
-    ["G社工場IoT導入", "G社", 320000000, "クラウド推進部"],
-    ["H社認証基盤更改", "H社", 120000000, "インフラ部"],
-    ["I社決済基盤改修", "I社", 420000000, "第1開発部"],
-    ["J社保守運用高度化", "J社", 80000000, "運用部"],
-    ["社内データレイク構築", "社内", 250000000, "情報システム部"],
-    ["監視基盤更改", "社内", 65000000, "運用部"],
-    ["ID管理統合", "社内", 98000000, "情報システム部"],
-    ["K社大規模Web刷新", "K社", 680000000, "第1開発部"],
-    ["L社モバイルアプリ刷新", "L社", 190000000, "第3開発課"],
-    ["N社基盤標準化", "N社", 300000000, "インフラ部"],
-    ["O社クラウド運用移管", "O社", 115000000, "クラウド推進部"],
-    ["P社販売管理再構築", "P社", 510000000, "第1開発部"],
-    ["Q社品質改善プロジェクト", "Q社", 73000000, "品質管理部"],
-    ["R社ネットワーク更改", "R社", 210000000, "インフラ部"],
-    ["S社AI活用PoC", "S社", 45000000, "クラウド推進部"],
-    ["社内ワークフロー刷新", "社内", 135000000, "情報システム部"],
-    ["T社DWH移行", "T社", 280000000, "クラウド推進部"],
-    ["U社会員基盤統合", "U社", 360000000, "第1開発部"],
-    ["V社セキュリティ監査対応", "V社", 70000000, "情報システム部"],
-    ["W社基幹保守延伸", "W社", 95000000, "運用部"],
-    ["X社新サービス基盤", "X社", 1250000000, "第1開発部"],
-    ["Y社帳票基盤刷新", "Y社", 160000000, "第2開発課"],
-  ];
-
-  projectSeeds.concat(
-    generatedProjectNames.map(([caseName, customerName, contractAmount, department], index) => {
-      const statusCycle = ["normal", "attention", "normal", "attention", "critical"];
-      const trendCycle = ["stable", "stable", "improving", "worsening", "worsening"];
-      const status = statusCycle[index % statusCycle.length];
-      const isCritical = status === "critical";
-      return {
-        caseName,
-        customerName,
-        contractAmount,
-        startDate: index % 2 === 0 ? "2026-04" : "2026-07",
-        plannedEndDate: index % 3 === 0 ? "2027-03" : "2027-09",
-        department,
-        owner: `${department}長`,
-        manager: ["田中", "伊藤", "中村", "小林", "加藤"][index % 5],
-        status,
-        trend: trendCycle[index % trendCycle.length],
-        importance: isCritical || contractAmount >= 500000000 ? "high" : status === "attention" ? "medium" : "low",
-        nextReportTo: isCritical ? "executive_meeting" : status === "attention" ? "division_management_meeting" : "none",
-        currentPhase: ["要件定義", "基本設計", "詳細設計", "構築", "テスト"][index % 5],
-        profitabilityStatus: isCritical || index % 7 === 0 ? "critical" : index % 3 === 0 ? "attention" : "normal",
-        scheduleStatus: isCritical || index % 6 === 0 ? "attention" : "normal",
-        qualityStatus: index % 4 === 0 ? "attention" : "normal",
-        staffingStatus: isCritical || index % 5 === 0 ? "attention" : "normal",
-        customerStatus: isCritical ? "critical" : index % 8 === 0 ? "attention" : "normal",
-        attentionSignalCount: isCritical ? 3 : status === "attention" ? 1 : 0,
-        changeRequestCount: isCritical ? 14 : index % 4,
-        openIssueCount: isCritical ? 20 : 2 + (index % 8),
-        milestoneStatus: isCritical ? "主要マイルストーン再計画中" : status === "attention" ? "一部工程に注意" : "計画通り",
-        latestComment: isCritical
-          ? "要件変更と要員不足が重なり、上位判断が必要です。"
-          : status === "attention"
-            ? "一部に注意点はあるが、支援があれば計画維持可能です。"
-            : "現時点では大きな懸念なし。",
-        supportNeeded: isCritical ? "executive_decision" : status === "attention" ? "staffing" : "none",
-      };
-    }),
-  ).forEach((seed, index) => {
-    const id = `C-P${String(index + 1).padStart(3, "0")}`;
-    cases.push({
-      id,
-      caseCode: `P-${String(index + 1).padStart(3, "0")}`,
-      caseName: seed.caseName,
-      caseType: "project",
-      department: seed.department,
-      owner: seed.owner,
-      manager: seed.manager,
-      status: seed.status,
-      trend: seed.trend,
-      importance: seed.importance,
-      nextReportTo: seed.nextReportTo,
-      latestComment: seed.latestComment,
-      supportNeeded: seed.supportNeeded,
-      attentionSignalCount: seed.attentionSignalCount,
-      lastUpdatedAt: index % 4 === 0 ? "2026-07-08" : "2026-07-05",
-    });
-    projectDetails.push({
-      caseId: id,
-      customerName: seed.customerName,
-      startDate: seed.startDate,
-      plannedEndDate: seed.plannedEndDate,
-      currentPhase: seed.currentPhase,
-      contractAmount: seed.contractAmount,
-      forecastCost: Math.round(seed.contractAmount * (seed.profitabilityStatus === "critical" ? 1.08 : seed.profitabilityStatus === "attention" ? 0.9 : 0.78)),
-      forecastGrossProfit: Math.round(seed.contractAmount * (seed.profitabilityStatus === "critical" ? -0.04 : seed.profitabilityStatus === "attention" ? 0.08 : 0.18)),
-      profitabilityStatus: seed.profitabilityStatus,
-      scheduleStatus: seed.scheduleStatus,
-      qualityStatus: seed.qualityStatus,
-      staffingStatus: seed.staffingStatus,
-      customerStatus: seed.customerStatus,
-      changeRequestCount: seed.changeRequestCount,
-      openIssueCount: seed.openIssueCount,
-      milestoneStatus: seed.milestoneStatus,
-    });
-  });
-
-  const routineSeeds = [
-    {
-      caseName: "2027年度予算策定",
-      deadline: "2026-09-30",
-      submitTo: "親会社",
-      department: "経営企画部",
-      owner: "経営企画部長",
-      manager: "経営企画部長",
-      currentStep: "各部門から回収",
-      progressRate: 45,
-      status: "attention",
-      trend: "worsening",
-      deadlineStatus: "attention",
-      processStatus: "attention",
-      approvalStatus: "normal",
-      responseStatus: "critical",
-      qualityStatus: "normal",
-      notSubmittedDepartmentCount: 4,
-      pendingApprovalCount: 1,
-      overdueTaskCount: 2,
-      nextReportTo: "division_management_meeting",
-      latestComment: "一部部門から入力資料が未提出で、親会社提出期限への影響が懸念されます。",
-    },
-    {
-      caseName: "四半期決算対応",
-      deadline: "2026-07-31",
-      submitTo: "親会社",
-      department: "経理部",
-      owner: "経理部長",
-      manager: "経理部長",
-      currentStep: "数値確認",
-      progressRate: 70,
-      status: "normal",
-      trend: "stable",
-      deadlineStatus: "normal",
-      processStatus: "normal",
-      approvalStatus: "attention",
-      responseStatus: "normal",
-      qualityStatus: "normal",
-      notSubmittedDepartmentCount: 0,
-      pendingApprovalCount: 2,
-      overdueTaskCount: 0,
+      estimateRevisionCount: 1,
       nextReportTo: "none",
-      latestComment: "承認待ちはあるが期限内に収まる見込みです。",
+      lastUpdatedAt: "2026-07-03",
+      latestComment: "現時点では大きな懸念なし。",
+    },
+  ];
+
+  const projectUpdates = [
+    {
+      id: "PU-001",
+      projectId: "PRJ-001",
+      date: "2026-07-01",
+      overallStatus: "attention",
+      trend: "worsening",
+      comment: "設計工程で追加要望が増加。追加見積の合意形成が必要。",
+      supportNeeded: "customer_negotiation",
+      aiSummary: "顧客合意と採算の両面で注意が必要。",
     },
     {
-      caseName: "人事評価運用",
-      deadline: "2026-08-20",
-      submitTo: "人事部",
-      department: "人事部",
-      owner: "人事部長",
-      manager: "人事部長",
-      currentStep: "一次評価回収",
-      progressRate: 55,
+      id: "PU-002",
+      projectId: "PRJ-001",
+      date: "2026-07-08",
+      overallStatus: "critical",
+      trend: "worsening",
+      comment: "要員不足により基本設計が2週間遅延。追加見積も未合意。",
+      supportNeeded: "executive_decision",
+      aiSummary: "要員、採算、顧客調整を幹部会候補として扱うべき状態。",
+    },
+    {
+      id: "PU-003",
+      projectId: "PRJ-002",
+      date: "2026-07-05",
+      overallStatus: "attention",
+      trend: "stable",
+      comment: "検証環境の不具合対応中。全体計画は維持。",
+      supportNeeded: "staffing",
+      aiSummary: "品質と要員に注意。追加支援で吸収可能。",
+    },
+  ];
+
+  const projectPlans = [
+    {
+      id: "PP-001",
+      projectId: "PRJ-001",
+      date: "2026-07-15",
+      type: "estimate",
+      title: "追加見積の合意期限",
+      owner: "山田",
+      status: "at_risk",
+      memo: "仕様追加分の見積前提と顧客承認ルートを確認する。",
+    },
+    {
+      id: "PP-002",
+      projectId: "PRJ-001",
+      date: "2026-07-22",
+      type: "milestone",
+      title: "基本設計レビュー",
+      owner: "山田",
+      status: "planned",
+      memo: "遅延中の設計領域を先にレビュー対象へ入れる。",
+    },
+    {
+      id: "PP-003",
+      projectId: "PRJ-001",
+      date: "2026-08-05",
+      type: "customer",
+      title: "依頼元との仕様凍結会議",
+      owner: "第1開発部長",
+      status: "planned",
+      memo: "追加要望の扱いと次回見積要否を合意する。",
+    },
+    {
+      id: "PP-004",
+      projectId: "PRJ-002",
+      date: "2026-07-18",
+      type: "meeting",
+      title: "検証環境の安定化判断",
+      owner: "鈴木",
+      status: "planned",
+      memo: "検証不具合の残件と追加要員要否を確認する。",
+    },
+    {
+      id: "PP-005",
+      projectId: "PRJ-003",
+      date: "2026-07-20",
+      type: "milestone",
+      title: "要件定義完了判定",
+      owner: "森",
+      status: "planned",
+      memo: "移行対象とクラウド接続方式の確定状況を確認する。",
+    },
+  ];
+
+  const operationSystems = [
+    {
+      id: "OPS-001",
+      systemCode: "OPS-001",
+      systemName: "販売管理システム",
+      requesterCompany: "販売A社",
+      department: "運用部",
+      relatedProjectId: "",
+      startedAt: "2018-04",
+      isJSOX: true,
+      operationStatus: "high_load",
+      inquiryCount: 45,
+      incidentCount: 3,
+      smallChangeCount: 8,
+      auditTaskCount: 12,
+      openIssueCount: 7,
+      dependencyRisk: "high",
+      successorRisk: "high",
+      attentionSignalCount: 3,
+      lastUpdatedAt: "2026-07-08",
+      nextAction: "J-SOX証跡対応の担当分散と小改修の優先順位整理",
+    },
+    {
+      id: "OPS-002",
+      systemCode: "OPS-002",
+      systemName: "会計システム",
+      requesterCompany: "グループ経理部",
+      department: "経理システム課",
+      relatedProjectId: "",
+      startedAt: "2017-10",
+      isJSOX: true,
+      operationStatus: "audit",
+      inquiryCount: 20,
+      incidentCount: 1,
+      smallChangeCount: 4,
+      auditTaskCount: 18,
+      openIssueCount: 3,
+      dependencyRisk: "medium",
+      successorRisk: "medium",
+      attentionSignalCount: 2,
+      lastUpdatedAt: "2026-07-07",
+      nextAction: "監査証跡提出の定型化と後継者育成計画の確認",
+    },
+    {
+      id: "OPS-003",
+      systemCode: "OPS-003",
+      systemName: "勤怠管理システム",
+      requesterCompany: "人事部",
+      department: "運用部",
+      relatedProjectId: "",
+      startedAt: "2021-01",
+      isJSOX: false,
+      operationStatus: "stable",
+      inquiryCount: 10,
+      incidentCount: 0,
+      smallChangeCount: 2,
+      auditTaskCount: 0,
+      openIssueCount: 1,
+      dependencyRisk: "low",
+      successorRisk: "low",
+      attentionSignalCount: 0,
+      lastUpdatedAt: "2026-07-01",
+      nextAction: "通常運用を継続",
+    },
+  ];
+
+  const operationHistories = [
+    {
+      id: "OH-001",
+      operationSystemId: "OPS-001",
+      date: "2026-07-01",
+      type: "inquiry",
+      title: "問い合わせ増加",
+      memo: "月次問い合わせ件数が前月比で増加。",
+      createdBy: "運用担当",
+    },
+    {
+      id: "OH-002",
+      operationSystemId: "OPS-001",
+      date: "2026-07-05",
+      type: "audit",
+      title: "J-SOX証跡提出依頼",
+      memo: "証跡提出依頼が集中。特定担当者への負荷が高い。",
+      createdBy: "監査対応担当",
+    },
+    {
+      id: "OH-003",
+      operationSystemId: "OPS-001",
+      date: "2026-07-10",
+      type: "small_change",
+      title: "小改修依頼追加",
+      memo: "小改修依頼が3件追加。優先順位整理が必要。",
+      createdBy: "運用担当",
+    },
+    {
+      id: "OH-004",
+      operationSystemId: "OPS-002",
+      date: "2026-07-07",
+      type: "audit",
+      title: "監査対応会議",
+      memo: "監査対応件数が18件に増加。証跡の標準化が必要。",
+      createdBy: "佐藤",
+    },
+  ];
+
+  const signals = [
+    {
+      id: "SIG-001",
+      signalCode: "SIG-001",
+      phase: "request",
+      relatedId: "REQ-001",
+      title: "生産管理システム老朽化対応で必要スキルが不足する可能性",
+      description: "データ移行とJ-SOX対応を同時に見られる要員が限られている。",
+      department: "第1開発課",
+      category: "staffing",
+      severity: "high",
+      frequency: "sometimes",
+      riskScore: 82,
+      isAttention: true,
+      attentionReason: "大規模相談で必要スキルが不足する可能性",
+      recommendedReportTo: "division",
       status: "attention",
-      trend: "stable",
-      deadlineStatus: "attention",
-      processStatus: "attention",
-      approvalStatus: "normal",
-      responseStatus: "attention",
-      qualityStatus: "normal",
-      notSubmittedDepartmentCount: 3,
-      pendingApprovalCount: 0,
-      overdueTaskCount: 1,
-      nextReportTo: "section_meeting",
-      latestComment: "一部部署の回答が遅れており、回収促進が必要です。",
-    },
-  ];
-
-  const generatedRoutineNames = [
-    ["監査対応", "2026-10-15", "監査法人", "経理部"],
-    ["採用計画策定", "2026-08-31", "経営会議", "人事部"],
-    ["労務対応方針更新", "2026-09-10", "本部基幹職会議", "人事部"],
-    ["親会社提出資料作成", "2026-07-25", "親会社", "経営企画部"],
-    ["制度改定対応", "2026-11-30", "経営会議", "人事部"],
-    ["内部統制チェック", "2026-08-15", "監査部門", "総務部"],
-    ["年度契約更新", "2026-12-20", "各取引先", "営業部"],
-    ["全社棚卸対応", "2026-09-05", "経理部", "総務部"],
-    ["予算実績差異分析", "2026-08-05", "経営会議", "経営企画部"],
-    ["安全衛生委員会資料", "2026-07-28", "安全衛生委員会", "人事部"],
-    ["教育計画取りまとめ", "2026-09-18", "本部長会議", "人事部"],
-    ["個人情報点検", "2026-08-25", "情報システム部", "総務部"],
-    ["取締役会資料作成", "2026-07-22", "取締役会", "経営企画部"],
-    ["下期要員計画", "2026-09-12", "幹部会", "人事部"],
-    ["購買申請棚卸", "2026-08-18", "経理部", "総務部"],
-    ["プロジェクト原価締め", "2026-07-29", "経理部", "経理部"],
-    ["BCP訓練準備", "2026-10-05", "経営会議", "総務部"],
-  ];
-
-  routineSeeds.concat(
-    generatedRoutineNames.map(([caseName, deadline, submitTo, department], index) => {
-      const statusCycle = ["normal", "attention", "normal", "attention", "critical", "normal"];
-      const status = statusCycle[index % statusCycle.length];
-      return {
-        caseName,
-        deadline,
-        submitTo,
-        department,
-        owner: `${department}長`,
-        manager: `${department}長`,
-        currentStep: ["依頼中", "回収中", "確認中", "承認待ち", "修正中"][index % 5],
-        progressRate: Math.min(95, 35 + ((index * 9) % 55)),
-        status,
-        trend: status === "critical" ? "worsening" : index % 4 === 0 ? "worsening" : "stable",
-        deadlineStatus: status === "critical" ? "critical" : index % 3 === 0 ? "attention" : "normal",
-        processStatus: index % 4 === 0 ? "attention" : "normal",
-        approvalStatus: index % 5 === 0 ? "attention" : "normal",
-        responseStatus: status === "critical" ? "critical" : index % 2 === 0 ? "attention" : "normal",
-        qualityStatus: index % 7 === 0 ? "attention" : "normal",
-        notSubmittedDepartmentCount: status === "critical" ? 5 : index % 4,
-        pendingApprovalCount: index % 5,
-        overdueTaskCount: status === "critical" ? 3 : index % 3,
-        nextReportTo: status === "critical" ? "executive_meeting" : status === "attention" ? "division_management_meeting" : "none",
-        latestComment: status === "critical"
-          ? "未回答と期限超過が重なり、上位報告候補です。"
-          : status === "attention"
-            ? "一部工程に注意が必要です。"
-            : "予定通り進行しています。",
-      };
-    }),
-  ).forEach((seed, index) => {
-    const id = `C-R${String(index + 1).padStart(3, "0")}`;
-    cases.push({
-      id,
-      caseCode: `R-${String(index + 1).padStart(3, "0")}`,
-      caseName: seed.caseName,
-      caseType: "routine",
-      department: seed.department,
-      owner: seed.owner,
-      manager: seed.manager,
-      status: seed.status,
-      trend: seed.trend,
-      importance: seed.status === "critical" ? "high" : seed.status === "attention" ? "medium" : "low",
-      nextReportTo: seed.nextReportTo,
-      latestComment: seed.latestComment,
-      supportNeeded: seed.status === "critical" ? "executive_decision" : seed.status === "attention" ? "other" : "none",
-      attentionSignalCount: seed.status === "critical" ? 2 : seed.status === "attention" ? 1 : 0,
-      lastUpdatedAt: index % 3 === 0 ? "2026-07-08" : "2026-07-04",
-    });
-    routineDetails.push({
-      caseId: id,
-      deadline: seed.deadline,
-      submitTo: seed.submitTo,
-      processTemplate: "依頼 → 回収 → 確認 → 承認 → 提出",
-      currentStep: seed.currentStep,
-      progressRate: seed.progressRate,
-      overdueTaskCount: seed.overdueTaskCount,
-      pendingApprovalCount: seed.pendingApprovalCount,
-      requestedDepartmentCount: 12,
-      notSubmittedDepartmentCount: seed.notSubmittedDepartmentCount,
-      deadlineStatus: seed.deadlineStatus,
-      processStatus: seed.processStatus,
-      approvalStatus: seed.approvalStatus,
-      responseStatus: seed.responseStatus,
-      qualityStatus: seed.qualityStatus,
-    });
-  });
-
-  const findCaseId = (name) => cases.find((item) => item.caseName === name)?.id;
-  const signalSeeds = [
-    ["A社案件で仕様変更が増えている", "A社案件で仕様変更が継続して発生しており、見積前提が崩れ始めています。", "第1開発部", "A社基幹システム更改", "estimate", "medium", "repeated", true, 82],
-    ["A社案件で追加見積の合意が取れていない", "追加見積の合意が取れず、採算悪化と赤字化のおそれがあります。", "第1開発部", "A社基幹システム更改", "profitability", "high", "repeated", true, 94],
-    ["A社案件で要員不足により設計工程が遅れている", "PMと設計リーダーの兼務が続き、設計工程が遅延しています。", "第1開発部", "A社基幹システム更改", "staffing", "high", "repeated", true, 91],
-    ["B社インフラ刷新で検証環境の不具合が増えている", "検証環境の不具合が増え、品質とスケジュールへの影響が出始めています。", "インフラ部", "B社インフラ刷新", "quality", "medium", "sometimes", true, 74],
-    ["第2開発課で突発休が増えている", "突発休が増えています。個人を責めるのではなく、課単位の負荷傾向として確認したいです。", "第2開発課", "", "organization", "high", "repeated", true, 90],
-    ["チームの出社日が合わず相談機会が減っている", "出社日が分散し、若手が相談しにくい状態になっています。", "第3開発課", "", "hybrid_work", "medium", "repeated", false, 58],
-    ["予算策定で一部部門から入力資料が未提出", "親会社提出に向けた予算策定で、一部部門から入力資料が未提出です。", "経営企画部", "2027年度予算策定", "deadline", "high", "sometimes", true, 88],
-    ["四半期決算で承認者確認が滞留している", "承認者確認が滞留していますが、期限内に解消見込みです。", "経理部", "四半期決算対応", "approval", "medium", "sometimes", false, 62],
-    ["M社案件で要件凍結ができていない", "二桁億円規模の案件で要件凍結できず、顧客影響と採算悪化が大きいです。", "第1開発部", "M社次世代基幹システム刷新", "customer", "high", "repeated", true, 96],
-    ["親会社提出資料の承認待ちが長引いている", "親会社提出資料の承認待ちが長引き、提出期限に影響するおそれがあります。", "経営企画部", "親会社提出資料作成", "approval", "high", "sometimes", true, 86],
-  ];
-
-  const signals = signalSeeds.map((seed, index) => {
-    const [title, description, department, relatedCaseName, category, severity, frequency, isAttentionSignal, riskScore] = seed;
-    return {
-      id: `S-${String(index + 1).padStart(3, "0")}`,
-      signalCode: `SIG-${String(index + 1).padStart(3, "0")}`,
-      title,
-      description,
-      department,
-      source: index % 3 === 0 ? "meeting" : index % 3 === 1 ? "manual" : "worklog",
-      category,
-      severity,
-      frequency,
-      relatedCaseId: relatedCaseName ? findCaseId(relatedCaseName) : undefined,
-      isAttentionSignal,
-      attentionReason: isAttentionSignal ? buildAttentionReason(category, riskScore, description) : "",
-      riskScore,
-      status: isAttentionSignal ? "attention" : riskScore >= 40 ? "watching" : "new",
-      createdAt: index < 5 ? "2026-07-04" : "2026-07-07",
-    };
-  });
-
-  const histories = cases.flatMap((item, index) => [
-    {
-      id: `H-${String(index + 1).padStart(3, "0")}-1`,
-      caseId: item.id,
-      reportedDate: "2026-06-30",
-      overallStatus: item.status === "critical" && item.trend === "worsening" ? "attention" : item.status,
-      trend: "stable",
-      comment: "前回報告時点の状態です。",
-      supportNeeded: item.supportNeeded,
-      createdBy: item.manager,
+      createdAt: "2026-07-08",
     },
     {
-      id: `H-${String(index + 1).padStart(3, "0")}-2`,
-      caseId: item.id,
-      reportedDate: item.lastUpdatedAt,
-      overallStatus: item.status,
-      trend: item.trend,
-      comment: item.latestComment,
-      supportNeeded: item.supportNeeded,
-      createdBy: item.manager,
+      id: "SIG-002",
+      signalCode: "SIG-002",
+      phase: "estimate",
+      relatedId: "EST-001",
+      title: "概算見積の根拠が弱く、依頼元から指摘あり",
+      description: "外部連携数とデータ移行量が未確定のまま提出し、根拠説明を求められた。",
+      department: "第1開発課",
+      category: "estimate",
+      severity: "medium",
+      frequency: "repeated",
+      riskScore: 76,
+      isAttention: true,
+      attentionReason: "見積根拠が弱く、再見積負荷が高まる可能性",
+      recommendedReportTo: "division",
+      status: "attention",
+      createdAt: "2026-07-04",
     },
-  ]);
+    {
+      id: "SIG-003",
+      signalCode: "SIG-003",
+      phase: "project",
+      relatedId: "PRJ-001",
+      title: "A社基幹システム更改で追加見積の合意が取れていない",
+      description: "仕様追加に対する追加見積の承認が滞留し、採算悪化のおそれ。",
+      department: "第1開発課",
+      category: "profitability",
+      severity: "high",
+      frequency: "repeated",
+      riskScore: 88,
+      isAttention: true,
+      attentionReason: "採算悪化と顧客合意遅れが重なっている",
+      recommendedReportTo: "executive",
+      status: "attention",
+      createdAt: "2026-07-08",
+    },
+    {
+      id: "SIG-004",
+      signalCode: "SIG-004",
+      phase: "project",
+      relatedId: "PRJ-001",
+      title: "A社基幹システム更改で要員不足により設計工程が遅延",
+      description: "主要設計者が複数案件を兼務しており、基本設計が2週間遅延。",
+      department: "第1開発課",
+      category: "staffing",
+      severity: "high",
+      frequency: "repeated",
+      riskScore: 84,
+      isAttention: true,
+      attentionReason: "要員不足が納期遅延に直結",
+      recommendedReportTo: "division",
+      status: "attention",
+      createdAt: "2026-07-08",
+    },
+    {
+      id: "SIG-005",
+      signalCode: "SIG-005",
+      phase: "operation",
+      relatedId: "OPS-001",
+      title: "販売管理システムでJ-SOX証跡対応が特定担当者に集中",
+      description: "監査対応と問い合わせが特定担当者に集中し、後継者リスクも高い。",
+      department: "運用部",
+      category: "audit",
+      severity: "high",
+      frequency: "repeated",
+      riskScore: 86,
+      isAttention: true,
+      attentionReason: "J-SOX対応と属人化リスクが同時に高い",
+      recommendedReportTo: "executive",
+      status: "attention",
+      createdAt: "2026-07-05",
+    },
+  ];
 
-  return { cases, projectDetails, routineDetails, signals, histories };
+  return {
+    requests,
+    requestHistories,
+    estimates,
+    estimateHistories,
+    projects,
+    projectUpdates,
+    projectPlans,
+    operationSystems,
+    operationHistories,
+    signals,
+  };
 }
 
 function loadState() {
   const base = buildInitialData();
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      return defaultState(base);
-    }
+    if (!raw) return defaultState(base);
     const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed.cases) || !Array.isArray(parsed.signals)) {
+    if (!Array.isArray(parsed.requests) || !Array.isArray(parsed.signals)) {
       return defaultState(base);
     }
     return {
       ...defaultState(base),
       ...parsed,
-      filters: { ...defaultFilters(), ...(parsed.filters || {}) },
-      signalFilters: { ...defaultSignalFilters(), ...(parsed.signalFilters || {}) },
+      filters: {
+        ...defaultFilters(),
+        ...(parsed.filters || {}),
+        request: { ...defaultFilters().request, ...((parsed.filters || {}).request || {}) },
+        estimate: { ...defaultFilters().estimate, ...((parsed.filters || {}).estimate || {}) },
+        project: { ...defaultFilters().project, ...((parsed.filters || {}).project || {}) },
+        operation: { ...defaultFilters().operation, ...((parsed.filters || {}).operation || {}) },
+        signal: { ...defaultFilters().signal, ...((parsed.filters || {}).signal || {}) },
+      },
+      activeTabs: { ...defaultTabs(), ...(parsed.activeTabs || {}) },
+      executiveDashboard: mergeExecutiveDashboardState(parsed.executiveDashboard),
     };
   } catch (error) {
     return defaultState(base);
@@ -605,46 +897,115 @@ function loadState() {
 function defaultState(base = buildInitialData()) {
   return {
     view: "overview",
-    selectedCaseId: base.cases[0]?.id || "",
-    selectedSignalId: base.signals.find((signal) => signal.isAttentionSignal)?.id || "",
-    selectedWeeklyCaseId: base.cases[0]?.id || "",
+    selectedRequestId: base.requests[0]?.id || "",
+    selectedEstimateId: base.estimates[0]?.id || "",
+    selectedProjectId: base.projects[0]?.id || "",
+    selectedOperationSystemId: base.operationSystems[0]?.id || "",
+    selectedSignalId: base.signals[0]?.id || "",
     selectedQuestion: sampleQuestions[0],
-    aiResult: null,
-    weeklyAiResult: null,
-    conversionResult: null,
+    signalDraftTarget: null,
+    activeTabs: defaultTabs(),
+    lastAiResult: null,
     filters: defaultFilters(),
-    signalFilters: defaultSignalFilters(),
-    cases: base.cases,
-    projectDetails: base.projectDetails,
-    routineDetails: base.routineDetails,
-    signals: base.signals,
-    histories: base.histories,
+    executiveDashboard: defaultExecutiveDashboardState(),
+    ...base,
+  };
+}
+
+function defaultExecutiveDashboardState() {
+  return {
+    currentView: "company",
+    settingsOpen: false,
+    filters: {
+      period: "next12",
+      organization: "all",
+      amountScale: "all",
+      status: "all",
+      revenueConfidence: "all",
+    },
+    visibleItems: visibleItemsFromKeys(executiveDashboardPresets.company.items),
+    savedViews: [],
+  };
+}
+
+function mergeExecutiveDashboardState(value) {
+  const base = defaultExecutiveDashboardState();
+  const savedViews = Array.isArray(value?.savedViews) ? value.savedViews : [];
+  return {
+    ...base,
+    ...(value || {}),
+    filters: {
+      ...base.filters,
+      ...(value?.filters || {}),
+    },
+    visibleItems: {
+      ...defaultDashboardVisibleItems(),
+      ...(value?.visibleItems || {}),
+    },
+    savedViews,
+  };
+}
+
+function defaultDashboardVisibleItems() {
+  return Object.fromEntries(Object.entries(executiveDashboardItems).map(([key, item]) => [key, Boolean(item.defaultVisible)]));
+}
+
+function visibleItemsFromKeys(keys) {
+  const visible = Object.fromEntries(Object.keys(executiveDashboardItems).map((key) => [key, false]));
+  keys.forEach((key) => {
+    if (key in visible) visible[key] = true;
+  });
+  return visible;
+}
+
+function defaultTabs() {
+  return {
+    request: "history",
+    estimate: "history",
+    project: "plans",
+    operation: "history",
   };
 }
 
 function defaultFilters() {
   return {
-    caseType: "all",
-    department: "all",
-    status: "all",
-    trend: "all",
-    attentionOnly: "all",
-    reportTo: "all",
-    profitabilityCritical: "all",
-    deadlineCritical: "all",
-    amountScale: "all",
-  };
-}
-
-function defaultSignalFilters() {
-  return {
-    attentionOnly: "all",
-    department: "all",
-    category: "all",
-    source: "all",
-    relatedOnly: "all",
-    highScore: "all",
-    openOnly: "all",
+    request: {
+      requesterCompany: "all",
+      department: "all",
+      background: "all",
+      status: "all",
+      budgetPlan: "all",
+      attentionOnly: "all",
+    },
+    estimate: {
+      status: "all",
+      estimateType: "all",
+      explanationQuality: "all",
+      feedbackOnly: "all",
+    },
+    project: {
+      department: "all",
+      overallStatus: "all",
+      trend: "all",
+      attentionOnly: "all",
+      reportTo: "all",
+      amountScale: "all",
+    },
+    operation: {
+      department: "all",
+      jsoxOnly: "all",
+      status: "all",
+      dependencyRisk: "all",
+      attentionOnly: "all",
+    },
+    signal: {
+      phase: "all",
+      department: "all",
+      category: "all",
+      attentionOnly: "yes",
+      reportTo: "all",
+      status: "all",
+    },
   };
 }
 
@@ -653,10 +1014,15 @@ function saveState() {
 }
 
 function handleClick(event) {
+  const action = event.target.closest("[data-action]");
+  if (action) {
+    handleAction(action.dataset.action, action.dataset);
+    return;
+  }
+
   const viewButton = event.target.closest("[data-view]");
   if (viewButton) {
-    if (viewButton.dataset.caseId) state.selectedCaseId = viewButton.dataset.caseId;
-    if (viewButton.dataset.signalId) state.selectedSignalId = viewButton.dataset.signalId;
+    selectFromDataset(viewButton.dataset);
     state.view = viewButton.dataset.view;
     saveState();
     render();
@@ -673,22 +1039,6 @@ function handleClick(event) {
     return;
   }
 
-  const filterReset = event.target.closest("[data-reset-filters]");
-  if (filterReset) {
-    state.filters = defaultFilters();
-    saveState();
-    render();
-    return;
-  }
-
-  const signalFilterReset = event.target.closest("[data-reset-signal-filters]");
-  if (signalFilterReset) {
-    state.signalFilters = defaultSignalFilters();
-    saveState();
-    render();
-    return;
-  }
-
   const questionButton = event.target.closest("[data-question]");
   if (questionButton) {
     state.selectedQuestion = questionButton.dataset.question;
@@ -697,421 +1047,584 @@ function handleClick(event) {
     return;
   }
 
-  const signalSelect = event.target.closest("[data-select-signal]");
-  if (signalSelect) {
-    state.selectedSignalId = signalSelect.dataset.selectSignal;
+  const tabButton = event.target.closest("[data-tab]");
+  if (tabButton) {
+    state.activeTabs[tabButton.dataset.tabGroup] = tabButton.dataset.tab;
     saveState();
     render();
-    return;
-  }
-
-  const actionButton = event.target.closest("[data-attention-action]");
-  if (actionButton) {
-    handleAttentionAction(actionButton.dataset.attentionAction, actionButton.dataset.signalId);
   }
 }
 
 function handleChange(event) {
+  const executiveFilter = event.target.closest("[data-executive-filter]");
+  if (executiveFilter) {
+    updateExecutiveDashboardFilter(executiveFilter.dataset.executiveFilter, executiveFilter.value);
+    saveState();
+    render();
+    return;
+  }
+
+  const executiveItem = event.target.closest("[data-executive-item]");
+  if (executiveItem) {
+    state.executiveDashboard.visibleItems[executiveItem.dataset.executiveItem] = executiveItem.checked;
+    state.executiveDashboard.currentView = "custom";
+    saveState();
+    render();
+    return;
+  }
+
   const filter = event.target.closest("[data-filter]");
   if (filter) {
-    state.filters[filter.dataset.filter] = filter.value;
+    state.filters[filter.dataset.filterGroup][filter.dataset.filter] = filter.value;
     saveState();
     render();
-    return;
   }
+}
 
-  const signalFilter = event.target.closest("[data-signal-filter]");
-  if (signalFilter) {
-    state.signalFilters[signalFilter.dataset.signalFilter] = signalFilter.value;
-    saveState();
-    render();
+function updateExecutiveDashboardFilter(key, value) {
+  if (key === "currentView") {
+    applyExecutiveDashboardView(value);
     return;
   }
+  state.executiveDashboard.filters[key] = value;
+}
 
-  const weeklyCase = event.target.closest("[data-weekly-case]");
-  if (weeklyCase) {
-    state.selectedWeeklyCaseId = weeklyCase.value;
-    saveState();
-    render();
+function applyExecutiveDashboardView(viewId) {
+  const preset = executiveDashboardPresets[viewId];
+  const saved = state.executiveDashboard.savedViews.find((view) => view.id === viewId);
+  if (preset) {
+    state.executiveDashboard.currentView = viewId;
+    state.executiveDashboard.visibleItems = visibleItemsFromKeys(preset.items);
     return;
   }
+  if (saved) {
+    state.executiveDashboard.currentView = saved.id;
+    state.executiveDashboard.visibleItems = { ...defaultDashboardVisibleItems(), ...(saved.visibleItems || {}) };
+    state.executiveDashboard.filters = { ...state.executiveDashboard.filters, ...(saved.filters || {}) };
+    return;
+  }
+  state.executiveDashboard.currentView = "custom";
 }
 
 function handleSubmit(event) {
-  if (event.target.id === "signal-form") {
+  const form = event.target;
+  if (form.id === "request-history-form") {
     event.preventDefault();
-    registerSignal(event.target);
-    return;
+    addRequestHistory(form);
   }
-
-  if (event.target.id === "weekly-update-form") {
+  if (form.id === "estimate-history-form") {
     event.preventDefault();
-    registerWeeklyUpdate(event.target);
-    return;
+    addEstimateHistory(form);
   }
-
-  if (event.target.id === "case-convert-form") {
+  if (form.id === "project-update-form") {
     event.preventDefault();
-    convertSignalToCase(event.target);
+    addProjectUpdate(form);
+  }
+  if (form.id === "project-plan-form") {
+    event.preventDefault();
+    addProjectPlan(form);
+  }
+  if (form.id === "operation-history-form") {
+    event.preventDefault();
+    addOperationHistory(form);
+  }
+  if (form.id === "signal-form") {
+    event.preventDefault();
+    addSignal(form);
+  }
+  if (form.id === "ai-question-form") {
+    event.preventDefault();
+    const input = Object.fromEntries(new FormData(form).entries());
+    state.selectedQuestion = input.question.trim() || sampleQuestions[0];
+    saveState();
+    render();
   }
 }
 
-function registerSignal(form) {
-  const input = Object.fromEntries(new FormData(form).entries());
-  const ai = runPseudoAiForSignal(input);
-  const id = nextSignalId();
-  const signal = {
-    id,
-    signalCode: `SIG-${id.split("-")[1]}`,
-    title: input.title.trim(),
-    description: input.description.trim(),
-    department: input.department,
-    source: "manual",
-    category: input.category || ai.category,
-    severity: input.severity,
-    frequency: input.frequency,
-    relatedCaseId: ai.relatedCaseId || undefined,
-    isAttentionSignal: ai.isAttentionCandidate,
-    attentionReason: ai.attentionReason,
-    riskScore: ai.riskScore,
-    status: ai.isAttentionCandidate ? "attention" : ai.riskScore >= 40 ? "watching" : "new",
-    createdAt: TODAY_ISO,
-  };
-
-  state.signals = [signal, ...state.signals];
-  if (signal.isAttentionSignal && signal.relatedCaseId) {
-    const related = findCase(signal.relatedCaseId);
-    if (related) {
-      related.attentionSignalCount += 1;
-      related.latestComment = `新しい要注意シグナル: ${signal.title}`;
-      related.lastUpdatedAt = TODAY_ISO;
+function selectFromDataset(dataset) {
+  if (dataset.requestId) state.selectedRequestId = dataset.requestId;
+  if (dataset.estimateId) state.selectedEstimateId = dataset.estimateId;
+  if (dataset.projectId) state.selectedProjectId = dataset.projectId;
+  if (dataset.operationId) state.selectedOperationSystemId = dataset.operationId;
+  if (dataset.signalId) state.selectedSignalId = dataset.signalId;
+  if (dataset.view === "signal-form") {
+    if (dataset.requestId) {
+      const request = findRequest(dataset.requestId);
+      state.signalDraftTarget = request ? { phase: "request", relatedId: request.id, department: request.department } : null;
+    } else if (dataset.estimateId) {
+      const estimate = findEstimate(dataset.estimateId);
+      const request = estimate ? findRequest(estimate.requestId) : null;
+      state.signalDraftTarget = estimate ? { phase: "estimate", relatedId: estimate.id, department: request?.department || departments[0] } : null;
+    } else if (dataset.projectId) {
+      const project = findProject(dataset.projectId);
+      state.signalDraftTarget = project ? { phase: "project", relatedId: project.id, department: project.department } : null;
+    } else if (dataset.operationId) {
+      const operation = findOperation(dataset.operationId);
+      state.signalDraftTarget = operation ? { phase: "operation", relatedId: operation.id, department: operation.department } : null;
     }
   }
-  state.aiResult = { ...ai, signalId: id };
+}
+
+function handleAction(action, dataset) {
+  if (action === "reset-filters") {
+    state.filters[dataset.filterGroup] = defaultFilters()[dataset.filterGroup];
+  }
+  if (action === "create-estimate") {
+    createEstimate(dataset.requestId);
+  }
+  if (action === "create-estimate-version") {
+    createEstimateVersion(dataset.estimateId);
+  }
+  if (action === "create-project") {
+    createProject(dataset.requestId);
+  }
+  if (action === "migrate-operation") {
+    migrateOperation(dataset.projectId);
+  }
+  if (action === "share-request") {
+    markRequestForDivision(dataset.requestId);
+  }
+  if (action === "signal-watch" || action === "signal-division" || action === "signal-executive" || action === "signal-close") {
+    updateSignalAction(action, dataset.signalId);
+  }
+  if (action === "toggle-dashboard-settings") {
+    state.executiveDashboard.settingsOpen = !state.executiveDashboard.settingsOpen;
+  }
+  if (action === "apply-dashboard-settings") {
+    state.executiveDashboard.settingsOpen = false;
+  }
+  if (action === "reset-dashboard-settings") {
+    state.executiveDashboard.visibleItems = visibleItemsFromKeys(executiveDashboardPresets.company.items);
+    state.executiveDashboard.currentView = "company";
+  }
+  if (action === "save-dashboard-view") {
+    saveExecutiveDashboardView();
+  }
   saveState();
   render();
 }
 
-function registerWeeklyUpdate(form) {
-  const input = Object.fromEntries(new FormData(form).entries());
-  const item = findCase(input.caseId);
-  if (!item) return;
-
-  item.status = input.overallStatus;
-  item.trend = input.trend;
-  item.latestComment = input.comment.trim();
-  item.supportNeeded = input.supportNeeded;
-  item.lastUpdatedAt = TODAY_ISO;
-  item.nextReportTo = recommendReportTo(input.overallStatus, input.trend, input.supportNeeded);
-
-  const ai = runPseudoAiForWeeklyUpdate(item, input.comment);
-  const history = {
-    id: nextHistoryId(),
-    caseId: item.id,
-    reportedDate: TODAY_ISO,
-    overallStatus: input.overallStatus,
-    trend: input.trend,
-    comment: input.comment.trim(),
-    supportNeeded: input.supportNeeded,
-    createdBy: item.manager,
-    ...ai.axisPatch,
-  };
-  state.histories = [history, ...state.histories];
-  state.weeklyAiResult = ai;
-  state.selectedCaseId = item.id;
-  saveState();
-  render();
-}
-
-function convertSignalToCase(form) {
-  const input = Object.fromEntries(new FormData(form).entries());
-  const signal = findSignal(input.signalId);
-  if (!signal) return;
-
-  const id = input.caseType === "project" ? nextCaseId("C-P") : nextCaseId("C-R");
-  const newCase = {
+function saveExecutiveDashboardView() {
+  const fallbackName = `保存ビュー${state.executiveDashboard.savedViews.length + 1}`;
+  const name = typeof window.prompt === "function" ? window.prompt("保存ビュー名を入力してください", fallbackName) : fallbackName;
+  if (!name) return;
+  const id = `saved-${Date.now()}`;
+  const view = {
     id,
-    caseCode: input.caseType === "project" ? `P-${id.split("P")[1]}` : `R-${id.split("R")[1]}`,
-    caseName: input.caseName.trim(),
-    caseType: input.caseType,
-    department: signal.department,
-    owner: input.owner.trim(),
-    manager: input.manager.trim(),
-    status: input.status,
-    trend: "stable",
-    importance: input.status === "critical" ? "high" : input.status === "attention" ? "medium" : "low",
-    nextReportTo: input.nextReportTo,
-    latestComment: input.policy.trim(),
-    supportNeeded: input.nextReportTo === "executive_meeting" ? "executive_decision" : "other",
-    attentionSignalCount: 1,
-    lastUpdatedAt: TODAY_ISO,
+    name: String(name).trim() || fallbackName,
+    visibleItems: { ...state.executiveDashboard.visibleItems },
+    filters: { ...state.executiveDashboard.filters },
   };
-  state.cases = [newCase, ...state.cases];
+  state.executiveDashboard.savedViews = [view, ...state.executiveDashboard.savedViews].slice(0, 8);
+  state.executiveDashboard.currentView = id;
+  state.executiveDashboard.settingsOpen = false;
+}
 
-  if (input.caseType === "project") {
-    const amount = parseAmount(input.impact);
-    state.projectDetails = [
-      {
-        caseId: id,
-        customerName: input.customerName || signal.department,
-        startDate: TODAY_ISO.slice(0, 7),
-        plannedEndDate: input.dueDate,
-        currentPhase: "立ち上げ",
-        contractAmount: amount,
-        forecastCost: Math.round(amount * 0.85),
-        forecastGrossProfit: Math.round(amount * 0.15),
-        profitabilityStatus: signal.category === "profitability" ? "attention" : "normal",
-        scheduleStatus: signal.category === "schedule" ? "attention" : "normal",
-        qualityStatus: signal.category === "quality" ? "attention" : "normal",
-        staffingStatus: signal.category === "staffing" || signal.category === "organization" ? "attention" : "normal",
-        customerStatus: signal.category === "customer" ? "attention" : "normal",
-        changeRequestCount: signal.category === "estimate" ? 1 : 0,
-        openIssueCount: 1,
-        milestoneStatus: "案件化直後",
-      },
-      ...state.projectDetails,
-    ];
-  } else {
-    state.routineDetails = [
-      {
-        caseId: id,
-        deadline: input.dueDate,
-        submitTo: input.submitTo || "未設定",
-        processTemplate: "依頼 → 回収 → 確認 → 承認 → 提出",
-        currentStep: "立ち上げ",
-        progressRate: 0,
-        overdueTaskCount: signal.category === "deadline" ? 1 : 0,
-        pendingApprovalCount: signal.category === "approval" ? 1 : 0,
-        requestedDepartmentCount: 10,
-        notSubmittedDepartmentCount: signal.category === "deadline" ? 1 : 0,
-        deadlineStatus: signal.category === "deadline" || signal.category === "schedule" ? "attention" : "normal",
-        processStatus: "normal",
-        approvalStatus: signal.category === "approval" ? "attention" : "normal",
-        responseStatus: "normal",
-        qualityStatus: signal.category === "quality" ? "attention" : "normal",
-      },
-      ...state.routineDetails,
-    ];
-  }
-
-  signal.relatedCaseId = id;
-  signal.status = "converted_to_case";
-  signal.isAttentionSignal = true;
-  state.histories = [
+function addRequestHistory(form) {
+  const input = Object.fromEntries(new FormData(form).entries());
+  const request = findRequest(input.requestId);
+  if (!request) return;
+  state.requestHistories = [
     {
-      id: nextHistoryId(),
-      caseId: id,
-      reportedDate: TODAY_ISO,
-      overallStatus: newCase.status,
-      trend: newCase.trend,
-      comment: `要注意シグナル「${signal.title}」から案件化。${input.policy}`,
-      supportNeeded: newCase.supportNeeded,
-      createdBy: input.manager,
+      id: nextId("RH", state.requestHistories),
+      requestId: request.id,
+      date: input.date || TODAY_ISO,
+      title: input.title.trim(),
+      memo: input.memo.trim(),
+      createdBy: input.createdBy.trim() || "担当者",
     },
-    ...state.histories,
+    ...state.requestHistories,
   ];
-  state.conversionResult = { caseId: id, signalId: signal.id };
-  state.selectedCaseId = id;
-  state.view = "case-detail";
+  request.summary = input.memo.trim();
+  request.lastUpdatedAt = input.date || TODAY_ISO;
+  request.nextAction = inferNextAction(input.memo, "request");
   saveState();
   render();
 }
 
-function handleAttentionAction(action, signalId) {
-  const signal = findSignal(signalId);
-  if (!signal) return;
-
-  if (action === "watch") {
-    signal.status = "watching";
-    signal.attentionReason = `${signal.attentionReason || ""} ウォッチ継続として確認中。`.trim();
+function addEstimateHistory(form) {
+  const input = Object.fromEntries(new FormData(form).entries());
+  const estimate = findEstimate(input.estimateId);
+  if (!estimate) return;
+  state.estimateHistories = [
+    {
+      id: nextId("EH", state.estimateHistories),
+      estimateId: estimate.id,
+      date: input.date || TODAY_ISO,
+      title: input.title.trim(),
+      memo: input.memo.trim(),
+      createdBy: input.createdBy.trim() || estimate.createdBy,
+    },
+    ...state.estimateHistories,
+  ];
+  if (input.memo.includes("指摘") || input.memo.includes("差戻")) {
+    estimate.feedbackCount += 1;
+    estimate.status = "feedback";
   }
-  if (action === "report-division") {
-    signal.status = "attention";
-    signal.attentionReason = `${signal.attentionReason || ""} 本部基幹職会議への報告候補。`.trim();
-    updateRelatedReport(signal, "division_management_meeting");
-  }
-  if (action === "report-exec") {
-    signal.status = "attention";
-    signal.attentionReason = `${signal.attentionReason || ""} 幹部会への報告候補。`.trim();
-    updateRelatedReport(signal, "executive_meeting");
-  }
-  if (action === "convert") {
-    state.selectedSignalId = signal.id;
-    state.view = "case-demo";
-  }
-  if (action === "close") {
-    signal.status = "closed";
-    signal.isAttentionSignal = false;
-  }
-
   saveState();
   render();
 }
 
-function updateRelatedReport(signal, nextReportTo) {
-  if (!signal.relatedCaseId) return;
-  const item = findCase(signal.relatedCaseId);
-  if (item) {
-    item.nextReportTo = nextReportTo;
-    item.lastUpdatedAt = TODAY_ISO;
-  }
+function addProjectUpdate(form) {
+  const input = Object.fromEntries(new FormData(form).entries());
+  const project = findProject(input.projectId);
+  if (!project) return;
+  project.overallStatus = input.overallStatus;
+  project.trend = input.trend;
+  project.supportNeeded = input.supportNeeded;
+  project.latestComment = input.comment.trim();
+  project.nextReportTo = recommendReportTo(input.overallStatus, input.trend, input.supportNeeded);
+  project.lastUpdatedAt = input.date || TODAY_ISO;
+  const ai = runPseudoAiForProjectUpdate(project, input.comment);
+  state.projectUpdates = [
+    {
+      id: nextId("PU", state.projectUpdates),
+      projectId: project.id,
+      date: input.date || TODAY_ISO,
+      overallStatus: input.overallStatus,
+      trend: input.trend,
+      comment: input.comment.trim(),
+      supportNeeded: input.supportNeeded,
+      aiSummary: ai.summary,
+    },
+    ...state.projectUpdates,
+  ];
+  applyProjectAxis(project, ai.axisPatch);
+  state.lastAiResult = ai;
+  saveState();
+  render();
 }
 
-function runPseudoAiForSignal(input) {
-  const text = [input.title, input.description, input.relatedText, input.comment].filter(Boolean).join(" ");
-  const category = input.category || inferCategory(text);
-  const relatedCase = findRelatedCase(input.relatedCaseId, text);
+function addProjectPlan(form) {
+  const input = Object.fromEntries(new FormData(form).entries());
+  const project = findProject(input.projectId);
+  if (!project) return;
+  state.projectPlans = [
+    {
+      id: nextId("PP", state.projectPlans || []),
+      projectId: project.id,
+      date: input.date || TODAY_ISO,
+      type: input.type,
+      title: input.title.trim(),
+      owner: input.owner.trim() || project.pm,
+      status: input.status,
+      memo: input.memo.trim(),
+    },
+    ...(state.projectPlans || []),
+  ];
+  project.currentPhase = input.phase?.trim() || project.currentPhase;
+  project.lastUpdatedAt = TODAY_ISO;
+  saveState();
+  render();
+}
+
+function addOperationHistory(form) {
+  const input = Object.fromEntries(new FormData(form).entries());
+  const system = findOperation(input.operationSystemId);
+  if (!system) return;
+  state.operationHistories = [
+    {
+      id: nextId("OH", state.operationHistories),
+      operationSystemId: system.id,
+      date: input.date || TODAY_ISO,
+      type: input.type,
+      title: input.title.trim(),
+      memo: input.memo.trim(),
+      createdBy: input.createdBy.trim() || "運用担当",
+    },
+    ...state.operationHistories,
+  ];
+  if (input.type === "inquiry") system.inquiryCount += 1;
+  if (input.type === "incident") system.incidentCount += 1;
+  if (input.type === "small_change") system.smallChangeCount += 1;
+  if (input.type === "audit") system.auditTaskCount += 1;
+  if (input.type === "incident" || input.type === "audit") system.operationStatus = input.type === "audit" ? "audit" : "attention";
+  system.lastUpdatedAt = input.date || TODAY_ISO;
+  system.nextAction = inferNextAction(input.memo, "operation");
+  saveState();
+  render();
+}
+
+function addSignal(form) {
+  const input = Object.fromEntries(new FormData(form).entries());
+  const category = input.category || inferSignalCategory(`${input.title} ${input.description}`);
+  const related = findRelatedObject(input.phase, input.relatedId);
   const riskScore = calculateRiskScore({
     severity: input.severity,
     frequency: input.frequency,
     category,
-    text,
-    hasRelatedCase: Boolean(relatedCase),
+    text: `${input.title} ${input.description}`,
+    related,
   });
-  const isAttentionCandidate = isAttentionSignalCandidate({ category, riskScore, text, frequency: input.frequency, relatedCase });
-  return {
-    summary: summarizeText(input.description || input.title),
+  const isAttention = riskScore >= 70 || input.forceAttention === "on";
+  const signal = {
+    id: nextId("SIG", state.signals),
+    signalCode: nextId("SIG", state.signals),
+    phase: input.phase,
+    relatedId: input.relatedId,
+    title: input.title.trim(),
+    description: input.description.trim(),
+    department: input.department,
     category,
+    severity: input.severity,
+    frequency: input.frequency,
     riskScore,
-    decision: riskDecision(riskScore),
-    isAttentionCandidate,
-    attentionReason: isAttentionCandidate ? buildAttentionReason(category, riskScore, text) : "通常シグナルとして記録し、増加傾向があれば再評価します。",
-    relatedCaseId: relatedCase?.id || "",
-    relatedCaseCandidates: findRelatedCaseCandidates(text, category),
-    recommendedAction: recommendSignalAction(riskScore, isAttentionCandidate),
+    isAttention,
+    attentionReason: isAttention ? buildAttentionReason(category, riskScore, input.description) : "通常シグナルとして記録",
+    recommendedReportTo: riskScore >= 85 ? "executive" : riskScore >= 70 ? "division" : "none",
+    status: isAttention ? "attention" : riskScore >= 40 ? "watching" : "new",
+    createdAt: TODAY_ISO,
   };
+  state.signals = [signal, ...state.signals];
+  bumpAttentionCount(signal);
+  state.selectedSignalId = signal.id;
+  state.view = "attention-signals";
+  saveState();
+  render();
 }
 
-function runPseudoAiForWeeklyUpdate(item, comment) {
-  const text = `${comment} ${item.latestComment}`;
-  const category = inferCategory(text);
-  const reportTo = recommendReportTo(item.status, item.trend, item.supportNeeded);
-  const axisPatch = inferAxisPatch(item, text);
-  const attentionCandidate = item.status === "critical" || item.trend === "worsening" || category !== "other";
-  return {
-    caseId: item.id,
-    summary: summarizeText(comment),
-    category,
-    axisPatch,
-    axisMessage: describeAxisPatch(item, axisPatch),
-    attentionCandidate,
-    attentionTitle: attentionCandidate ? `${item.caseName}の週次更新から要注意候補` : "現時点では要注意候補なし",
-    reportTo,
-    nextCheck: nextCheckPoint(item, category),
+function createEstimate(requestId) {
+  const request = findRequest(requestId);
+  if (!request) return;
+  const version = relatedEstimates(request.id).length + 1;
+  const id = nextId("EST", state.estimates);
+  const estimate = {
+    id,
+    estimateCode: id,
+    requestId: request.id,
+    projectId: "",
+    title: `${request.title} 第${version}版概算`,
+    version,
+    estimateType: version === 1 ? "rough" : "conceptual",
+    amount: 0,
+    personMonths: 0,
+    assumptions: "対象範囲、外部連携、利用部門、データ移行量を確認中。",
+    exclusions: "未確定要件、周辺システム改修、長期並行稼働は別途確認。",
+    riskLevel: "medium",
+    status: "draft",
+    dueDate: TODAY_ISO,
+    submittedDate: "",
+    explanationQuality: "weak",
+    feedbackCount: 0,
+    createdBy: "担当者",
   };
-}
-
-function inferCategory(text) {
-  const rules = [
-    ["profitability", ["採算", "赤字", "利益", "工数超過", "追加見積"]],
-    ["estimate", ["仕様変更", "要件変更", "前提変更", "見積"]],
-    ["quality", ["不具合", "障害", "品質", "手戻り", "テスト"]],
-    ["schedule", ["納期", "遅延", "スケジュール", "期限"]],
-    ["staffing", ["要員", "人手不足", "兼務", "負荷集中", "PM不足", "PM"]],
-    ["organization", ["突発休", "休職", "疲弊", "気分", "体調"]],
-    ["hybrid_work", ["出社", "在宅", "テレワーク", "座席", "相談機会"]],
-    ["customer", ["顧客", "クレーム", "承認遅れ", "反応が悪い"]],
-    ["approval", ["承認", "滞留", "決裁"]],
-    ["deadline", ["提出", "親会社", "締切", "未提出"]],
+  state.estimates = [estimate, ...state.estimates];
+  state.estimateHistories = [
+    {
+      id: nextId("EH", state.estimateHistories),
+      estimateId: id,
+      date: TODAY_ISO,
+      title: "見積作成開始",
+      memo: "相談～見積ステップから見積版を作成。",
+      createdBy: "担当者",
+    },
+    ...state.estimateHistories,
   ];
-  const normalized = String(text || "");
-  const hit = rules.find(([, keywords]) => keywords.some((keyword) => normalized.includes(keyword)));
-  return hit ? hit[0] : "other";
+  request.status = "estimating";
+  request.lastUpdatedAt = TODAY_ISO;
+  state.selectedEstimateId = id;
+  state.view = "estimate-detail";
 }
 
-function calculateRiskScore({ severity, frequency, category, text, hasRelatedCase }) {
-  let score = 0;
-  if (severity === "high") score += 30;
-  if (severity === "medium") score += 15;
-  if (frequency === "repeated") score += 20;
-  if (frequency === "sometimes") score += 10;
-  if (["profitability", "customer", "organization", "deadline", "approval"].includes(category)) score += 20;
-  if (/遅延|赤字|休職|障害|未提出|承認滞留|滞留|幹部会|危険|負荷集中/.test(text)) score += 20;
-  if (hasRelatedCase) score += 10;
-  return Math.max(0, Math.min(100, score));
-}
-
-function isAttentionSignalCandidate({ category, riskScore, text, frequency, relatedCase }) {
-  if (riskScore >= 70) return true;
-  if (["profitability", "schedule", "customer", "organization", "deadline", "approval"].includes(category)) return true;
-  if (/採算悪化|納期遅延|顧客影響|突発休|休職|負荷集中|親会社|承認滞留|二桁億円|大規模/.test(text)) return true;
-  if (frequency === "repeated") return true;
-  if (relatedCase && relatedCase.importance === "high") return true;
-  return false;
-}
-
-function riskDecision(score) {
-  if (score >= 85) return "案件化候補";
-  if (score >= 70) return "要注意シグナル";
-  if (score >= 40) return "ウォッチ";
-  return "通常シグナル";
-}
-
-function buildAttentionReason(category, riskScore, text) {
-  const reasons = [];
-  if (riskScore >= 70) reasons.push(`リスクスコア${riskScore}点`);
-  if (category === "profitability" || /採算|赤字|追加見積/.test(text)) reasons.push("採算悪化に関係");
-  if (category === "schedule" || /遅延|納期/.test(text)) reasons.push("納期遅延に関係");
-  if (category === "customer" || /顧客|クレーム/.test(text)) reasons.push("顧客影響あり");
-  if (category === "organization" || /突発休|休職|負荷集中|疲弊/.test(text)) reasons.push("組織コンディションに関係");
-  if (category === "deadline" || /親会社|未提出|締切/.test(text)) reasons.push("親会社提出期限に影響");
-  if (category === "approval" || /承認|滞留|決裁/.test(text)) reasons.push("承認滞留あり");
-  if (!reasons.length) reasons.push("複数回発生または上位層のウォッチ対象");
-  return reasons.join(" / ");
-}
-
-function recommendSignalAction(score, isAttention) {
-  if (score >= 85) return "案件化候補として、責任者・期限・金額・対応方針を設定してください。";
-  if (isAttention) return "要注意シグナルとして、本部長または管理職がウォッチしてください。";
-  if (score >= 40) return "ウォッチ継続。類似シグナルが増えるか確認してください。";
-  return "通常シグナルとして軽く記録します。";
-}
-
-function inferAxisPatch(item, text) {
-  const level = item.status === "critical" || /危険|赤字|大幅|遅延|未提出/.test(text) ? "critical" : "attention";
-  if (item.caseType === "project") {
-    return {
-      profitabilityStatus: /採算|赤字|利益|追加見積|工数超過/.test(text) ? level : undefined,
-      scheduleStatus: /納期|遅延|スケジュール|期限/.test(text) ? level : undefined,
-      qualityStatus: /品質|不具合|障害|テスト|手戻り/.test(text) ? level : undefined,
-      staffingStatus: /要員|人手不足|兼務|負荷集中|PM/.test(text) ? level : undefined,
-      customerStatus: /顧客|クレーム|承認遅れ|反応/.test(text) ? level : undefined,
-    };
-  }
-  return {
-    deadlineStatus: /期限|締切|提出|未提出|親会社/.test(text) ? level : undefined,
-    processStatus: /工程|遅延|スケジュール/.test(text) ? level : undefined,
-    approvalStatus: /承認|滞留|決裁/.test(text) ? level : undefined,
-    responseStatus: /回答|未回答|回収|未提出/.test(text) ? level : undefined,
-    qualityStatus: /品質|不備|差戻|手戻り/.test(text) ? level : undefined,
+function createEstimateVersion(estimateId) {
+  const base = findEstimate(estimateId);
+  if (!base) return;
+  const version = Math.max(...relatedEstimates(base.requestId).map((item) => item.version), 0) + 1;
+  const id = nextId("EST", state.estimates);
+  const estimate = {
+    ...base,
+    id,
+    estimateCode: id,
+    title: `${requestTitle(base.requestId)} 第${version}版${labels.estimateType.revised_conceptual}`,
+    version,
+    estimateType: "revised_conceptual",
+    amount: Math.round(base.amount * 1.08),
+    personMonths: Math.round(base.personMonths * 1.08),
+    status: "draft",
+    submittedDate: "",
+    explanationQuality: "normal",
+    feedbackCount: 0,
   };
+  state.estimates = [estimate, ...state.estimates];
+  state.estimateHistories = [
+    {
+      id: nextId("EH", state.estimateHistories),
+      estimateId: id,
+      date: TODAY_ISO,
+      title: "改訂版を追加",
+      memo: "前版をコピーし、変更がある前提だけ更新する想定。",
+      createdBy: estimate.createdBy,
+    },
+    ...state.estimateHistories,
+  ];
+  state.selectedEstimateId = id;
+  state.view = "estimate-detail";
 }
 
-function describeAxisPatch(item, axisPatch) {
-  const entries = Object.entries(axisPatch).filter(([, value]) => value);
-  if (!entries.length) return "状態軸への明確な変更は検出されませんでした。";
-  return entries
-    .map(([key, value]) => `${axisLabel(item.caseType, key)}: ${labels.statusLevel[value]}`)
-    .join("、");
+function createProject(requestId) {
+  const request = findRequest(requestId);
+  if (!request) return;
+  const estimate = relatedEstimates(request.id).sort((a, b) => b.version - a.version)[0];
+  const id = nextId("PRJ", state.projects);
+  const project = {
+    id,
+    projectCode: id,
+    title: request.title.replace("対応", "プロジェクト"),
+    requestId: request.id,
+    requesterCompany: request.requesterCompany,
+    department: request.department,
+    owner: `${request.department}長`,
+    pm: "未設定",
+    amount: estimate?.amount || 0,
+    startDate: TODAY_ISO.slice(0, 7),
+    plannedEndDate: request.desiredTiming,
+    currentPhase: "立ち上げ",
+    overallStatus: request.attentionSignalCount > 0 ? "attention" : "normal",
+    trend: "stable",
+    scheduleStatus: "normal",
+    profitabilityStatus: "normal",
+    qualityStatus: "normal",
+    staffingStatus: request.attentionSignalCount > 0 ? "attention" : "normal",
+    customerStatus: "normal",
+    attentionSignalCount: request.attentionSignalCount,
+    estimateRevisionCount: relatedEstimates(request.id).length,
+    nextReportTo: request.attentionSignalCount > 0 ? "division" : "none",
+    lastUpdatedAt: TODAY_ISO,
+    latestComment: "相談～見積ステップからプロジェクト化。初回計画を確認中。",
+  };
+  state.projects = [project, ...state.projects];
+  request.status = "likely_order";
+  request.lastUpdatedAt = TODAY_ISO;
+  if (estimate) estimate.projectId = id;
+  state.projectUpdates = [
+    {
+      id: nextId("PU", state.projectUpdates),
+      projectId: id,
+      date: TODAY_ISO,
+      overallStatus: project.overallStatus,
+      trend: project.trend,
+      comment: "相談～見積ステップからプロジェクト化。",
+      supportNeeded: "none",
+      aiSummary: "初期状態を登録。今後は週次・月次更新を蓄積する。",
+    },
+    ...state.projectUpdates,
+  ];
+  state.projectPlans = [
+    {
+      id: nextId("PP", state.projectPlans || []),
+      projectId: id,
+      date: TODAY_ISO,
+      type: "milestone",
+      title: "初回計画確認",
+      owner: project.pm,
+      status: "planned",
+      memo: "立ち上げ後の予定、見積経緯、体制を確認する。",
+    },
+    ...(state.projectPlans || []),
+  ];
+  state.selectedProjectId = id;
+  state.view = "project-detail";
 }
 
-function nextCheckPoint(item, category) {
-  if (item.caseType === "project") {
-    if (category === "profitability" || category === "estimate") return "追加見積、工数見通し、契約前提の変更有無";
-    if (category === "staffing" || category === "organization") return "PM兼務、主要工程の担当余力、支援要員の要否";
-    if (category === "quality") return "同種不具合の再発状況とリリース影響";
-    if (category === "customer") return "顧客合意、承認遅れ、上位者同席の必要性";
-    return "進捗、採算、品質、要員、顧客のうち悪化している軸";
+function migrateOperation(projectId) {
+  const project = findProject(projectId);
+  if (!project) return;
+  const existing = state.operationSystems.find((item) => item.relatedProjectId === project.id);
+  if (existing) {
+    state.selectedOperationSystemId = existing.id;
+    state.view = "operation-detail";
+    return;
   }
-  if (category === "deadline") return "親会社提出期限、未提出部門、期限超過タスク";
-  if (category === "approval") return "承認者、承認待ち件数、決裁期限";
-  return "期限、工程、承認、回答、品質のうち悪化している軸";
+  const id = nextId("OPS", state.operationSystems);
+  const system = {
+    id,
+    systemCode: id,
+    systemName: project.title.replace("プロジェクト", "システム").replace("更改", ""),
+    requesterCompany: project.requesterCompany,
+    department: project.department,
+    relatedProjectId: project.id,
+    startedAt: TODAY_ISO.slice(0, 7),
+    isJSOX: /会計|販売|基幹|生産/.test(project.title),
+    operationStatus: "attention",
+    inquiryCount: 0,
+    incidentCount: 0,
+    smallChangeCount: 0,
+    auditTaskCount: /会計|販売|基幹|生産/.test(project.title) ? 1 : 0,
+    openIssueCount: 1,
+    dependencyRisk: "medium",
+    successorRisk: "medium",
+    attentionSignalCount: 0,
+    lastUpdatedAt: TODAY_ISO,
+    nextAction: "初期保守体制と監査対応範囲を整理",
+  };
+  state.operationSystems = [system, ...state.operationSystems];
+  state.operationHistories = [
+    {
+      id: nextId("OH", state.operationHistories),
+      operationSystemId: id,
+      date: TODAY_ISO,
+      type: "memo",
+      title: "保守・運用へ移行",
+      memo: "プロジェクトから保守・運用対象として登録。",
+      createdBy: project.pm,
+    },
+    ...state.operationHistories,
+  ];
+  project.overallStatus = "completed";
+  project.lastUpdatedAt = TODAY_ISO;
+  state.selectedOperationSystemId = id;
+  state.view = "operation-detail";
 }
 
-function recommendReportTo(status, trend, supportNeeded) {
-  if (status === "critical" || supportNeeded === "executive_decision" || supportNeeded === "budget") return "executive_meeting";
-  if (status === "attention" || trend === "worsening" || supportNeeded !== "none") return "division_management_meeting";
-  return "none";
+function markRequestForDivision(requestId) {
+  const request = findRequest(requestId);
+  if (!request) return;
+  const id = nextId("SIG", state.signals);
+  state.signals = [
+    {
+      id,
+      signalCode: id,
+      phase: "request",
+      relatedId: request.id,
+      title: `${request.title}を本部長共有候補に設定`,
+      description: request.summary,
+      department: request.department,
+      category: inferSignalCategory(request.summary),
+      severity: "medium",
+      frequency: "sometimes",
+      riskScore: 72,
+      isAttention: true,
+      attentionReason: "相談段階だが上位層が早めに見るべき候補",
+      recommendedReportTo: "division",
+      status: "attention",
+      createdAt: TODAY_ISO,
+    },
+    ...state.signals,
+  ];
+  request.attentionSignalCount += 1;
+  request.nextAction = "本部長確認候補として背景と要員影響を整理";
+  request.lastUpdatedAt = TODAY_ISO;
+}
+
+function updateSignalAction(action, signalId) {
+  const signal = findSignal(signalId);
+  if (!signal) return;
+  if (action === "signal-watch") {
+    signal.status = "watching";
+  }
+  if (action === "signal-division") {
+    signal.status = "attention";
+    signal.recommendedReportTo = "division";
+    signal.attentionReason = `${signal.attentionReason || ""} / 本部長確認候補`;
+  }
+  if (action === "signal-executive") {
+    signal.status = "attention";
+    signal.recommendedReportTo = "executive";
+    signal.attentionReason = `${signal.attentionReason || ""} / 幹部会報告候補`;
+  }
+  if (action === "signal-close") {
+    signal.status = "closed";
+  }
 }
 
 function render() {
@@ -1132,31 +1645,35 @@ function renderSidebar() {
   return `
     <aside class="sidebar">
       <div class="brand">
-        <div class="brand-mark">S2C</div>
-        <h1>経営論点・予兆管理システム</h1>
-        <p>Signal-to-Case Management</p>
+        <div class="brand-mark">BF</div>
+        <h1>業務フロー統合型・予兆管理プラットフォーム</h1>
+        <p>Business Flow & Signal Management</p>
       </div>
       ${renderNavSection("共通", [
         ["overview", "トップ / 説明", ""],
-        ["comparison", "初期版と最終形の比較", ""],
+        ["comparison", "初期版と本番化", ""],
       ])}
       ${renderNavSection("経営・俯瞰", [
         ["executive-dashboard", "経営ダッシュボード", ""],
-        ["portfolio", "案件ポートフォリオ", String(state.cases.length)],
-        ["ai-qa", "AI質問デモ", ""],
+        ["attention-signals", "要注意シグナル", String(attentionSignals().length)],
+        ["ai-qa", "AI質問画面", ""],
       ])}
-      ${renderNavSection("案件", [
-        ["project-cases", "プロジェクト型案件", String(projectCases().length)],
-        ["routine-cases", "定型業務型案件", String(routineCases().length)],
-        ["case-detail", "案件詳細", ""],
-        ["weekly-update", "週次一言更新", ""],
-        ["case-demo", "案件化デモ", ""],
+      ${renderNavSection("業務フロー", [
+        ["requests", "相談～見積一覧", String(state.requests.length)],
+        ["request-detail", "相談～見積詳細", ""],
+        ["estimates", "見積履歴一覧", String(state.estimates.length)],
+        ["estimate-detail", "見積詳細 / AI支援", ""],
+        ["projects", "プロジェクトポートフォリオ", String(state.projects.length)],
+        ["project-detail", "プロジェクト詳細", ""],
+        ["operations", "保守・運用一覧", String(state.operationSystems.length)],
+        ["operation-detail", "保守・運用詳細", ""],
       ])}
-      ${renderNavSection("シグナル", [
-        ["signals", "シグナル一覧", String(state.signals.length)],
+      ${renderNavSection("入力", [
         ["signal-form", "シグナル登録", ""],
-        ["attention-signals", "要注意シグナル一覧", String(attentionSignals().length)],
       ])}
+      <div class="nav-section">
+        <button class="btn danger" data-reset>データ初期化</button>
+      </div>
     </aside>
   `;
 }
@@ -1179,15 +1696,16 @@ function renderNavSection(title, items) {
 
 function renderCurrentView() {
   if (state.view === "executive-dashboard") return renderExecutiveDashboard();
-  if (state.view === "portfolio") return renderPortfolio();
-  if (state.view === "project-cases") return renderProjectCases();
-  if (state.view === "routine-cases") return renderRoutineCases();
-  if (state.view === "case-detail") return renderCaseDetail();
-  if (state.view === "signals") return renderSignals();
-  if (state.view === "signal-form") return renderSignalForm();
+  if (state.view === "requests") return renderRequests();
+  if (state.view === "request-detail") return renderRequestDetail();
+  if (state.view === "estimates") return renderEstimates();
+  if (state.view === "estimate-detail") return renderEstimateDetail();
+  if (state.view === "projects") return renderProjects();
+  if (state.view === "project-detail") return renderProjectDetail();
+  if (state.view === "operations") return renderOperations();
+  if (state.view === "operation-detail") return renderOperationDetail();
   if (state.view === "attention-signals") return renderAttentionSignals();
-  if (state.view === "weekly-update") return renderWeeklyUpdate();
-  if (state.view === "case-demo") return renderCaseDemo();
+  if (state.view === "signal-form") return renderSignalForm();
   if (state.view === "ai-qa") return renderAiQa();
   if (state.view === "comparison") return renderComparison();
   return renderOverview();
@@ -1199,12 +1717,9 @@ function renderPageHeader(kicker, title, lead, actions = "") {
       <div>
         <p class="eyebrow">${escapeHtml(kicker)}</p>
         <h2>${escapeHtml(title)}</h2>
-        ${lead ? `<p class="lead">${escapeHtml(lead)}</p>` : ""}
+        <p class="lead">${escapeHtml(lead)}</p>
       </div>
-      <div class="top-actions">
-        ${actions}
-        <button class="btn" data-reset>データ初期化</button>
-      </div>
+      ${actions ? `<div class="top-actions">${actions}</div>` : ""}
     </div>
   `;
 }
@@ -1213,764 +1728,711 @@ function renderOverview() {
   return `
     ${renderPageHeader(
       "CONCEPT",
-      "入口は軽く、重要なものだけ要注意化し、案件化したらしっかり管理する",
-      "会議別Excel・PowerPoint管理から、案件・シグナル中心の管理へ移行する説明用プロトタイプです。",
-      `<button class="btn primary" data-view="executive-dashboard">経営ダッシュボード</button><button class="btn" data-view="portfolio">案件ポートフォリオ</button>`,
+      "相談～見積から保守までを3つの流れで見る",
+      "相談～見積、プロジェクト、保守・運用を別々の資料で管理せず、履歴と要注意シグナルを横断して見る説明用プロトタイプです。",
+      `<button class="btn primary" data-view="executive-dashboard">経営ダッシュボード</button><button class="btn" data-view="requests">相談～見積を見る</button>`,
     )}
     <div class="message-band">
-      <strong>この仕組みは、現場に重い報告を強いるものではありません。</strong><br>
-      まずは小さな違和感をシグナルとして軽く登録します。
-      その中で幹部・本部長が注意すべきものを要注意シグナルとして可視化します。
-      必要なものだけを案件化し、責任者・期限・金額・対応方針を持たせて厳格に管理します。
-      これにより、全社の論点・予兆を早期に把握し、手遅れになる前に支援・判断・対策ができます。
+      <strong>この仕組みは、相談～見積、プロジェクト、保守・運用を別々に管理するのではなく、一連の業務ライフサイクルとしてつなぎます。</strong><br>
+      各フェーズで発生する情報を履歴として蓄積し、AIが要約・分類・リスク検知を支援します。
+      小さな違和感はシグナルとして拾い、重要なものは要注意シグナルとして本部長・幹部が確認できます。
+      目的は監視ではなく、見積負荷を下げ、プロジェクト状況と保守・運用の隠れた負荷を早期に把握することです。
     </div>
     <section class="section">
-      <div class="flow">
-        ${renderFlowStep("1", "シグナル", "軽い", "現場の違和感、懸念、兆しを短く登録します。", 1)}
-        ${renderFlowStep("2", "要注意シグナル", "中程度", "上位層がウォッチすべき重要な兆候だけを可視化します。", 2)}
-        ${renderFlowStep("3", "案件", "厳格", "責任者、期限、金額、対応方針、報告先を持つ正式管理にします。", 3)}
+      <div class="flow lifecycle-flow">
+        ${renderFlowStep("1", "相談～見積", "将来売上の入口", "正式案件になる前の相談、見積版、前提条件、次アクションを軽く記録します。")}
+        ${renderFlowStep("2", "プロジェクト", "受注後の売上を管理", "進捗、採算、品質、要員、顧客の変化を週次・月次で追加します。")}
+        ${renderFlowStep("3", "保守・運用", "継続売上を見える化", "問い合わせ、障害、小改修、監査対応、属人化リスクを蓄積します。")}
       </div>
     </section>
     <section class="section grid cols-2">
       <div class="panel">
-        <h3>案件タイプの違い</h3>
+        <h3>横断する仕組み</h3>
         <div class="axis-grid section">
           <div class="axis-card">
-            <h4>プロジェクト型案件</h4>
-            <p>複数年・高額のシステム開発やITインフラ整備を、進捗・採算・品質・要員・顧客で見ます。</p>
+            <h4>要注意シグナル</h4>
+            <p>各フェーズの小さな違和感から、本部長・幹部が見るべき兆候を抽出します。</p>
           </div>
           <div class="axis-card">
-            <h4>定型業務型案件</h4>
-            <p>予算策定、決算、監査、親会社提出資料などを、期限・工程・承認・回答・品質で見ます。</p>
+            <h4>疑似AI支援</h4>
+            <p>分類、要約、リスクスコア、見積説明文、不足前提の提示を関数で再現します。</p>
           </div>
         </div>
       </div>
       <div class="panel">
-        <h3>早期支援の前提</h3>
+        <h3>UI/UXの前提</h3>
         <ul class="safety-list">
-          <li>目的は監視ではなく、手遅れになる前の早期支援です。</li>
-          <li>個人を責めるためではなく、組織課題を早く見つけるために使います。</li>
-          <li>評価・査定には使いません。</li>
-          <li>本番化時は、個人情報・健康情報の閲覧権限を厳格に分けます。</li>
-          <li>初期版ではチーム・課単位の傾向把握を重視します。</li>
+          <li>入力は短いメモを追加する体験を中心にします。</li>
+          <li>履歴はタイムライン形式で自然に積み上げます。</li>
+          <li>詳細はタブで切り替え、過去の経緯を追いやすくします。</li>
+          <li>AIは現場評価ではなく、要約・分類・見積支援・予兆検知の補助として扱います。</li>
         </ul>
       </div>
     </section>
   `;
 }
 
-function renderFlowStep(number, title, weight, description, level) {
+function renderFlowStep(number, title, label, description) {
   return `
     <div class="flow-step">
-      <div class="flow-kicker">STEP ${number}</div>
+      <div class="flow-kicker">STEP ${escapeHtml(number)}</div>
       <h3>${escapeHtml(title)}</h3>
       <p>${escapeHtml(description)}</p>
-      <div class="weight-scale">${[1, 2, 3].map((item) => `<span class="weight-dot ${item <= level ? "active" : ""}"></span>`).join("")}</div>
-      <p><strong>${escapeHtml(weight)}</strong></p>
+      <p><strong>${escapeHtml(label)}</strong></p>
     </div>
   `;
 }
 
 function renderExecutiveDashboard() {
-  const criticalCases = state.cases.filter((item) => item.status === "critical");
-  const attentionCases = state.cases.filter((item) => item.status === "attention");
-  const execCandidates = reportCandidates().filter((item) => item.nextReportTo === "executive_meeting");
-  const profitabilityCritical = projectCases().filter((item) => projectDetail(item.id)?.profitabilityStatus === "critical");
-  const deadlineCritical = routineCases().filter((item) => routineDetail(item.id)?.deadlineStatus === "critical");
-  const orgSignals = attentionSignals().filter((signal) => signal.category === "organization");
-  const worsening = state.cases.filter((item) => item.trend === "worsening");
-  const largeCritical = projectCases().filter((item) => item.status === "critical" && (projectDetail(item.id)?.contractAmount || 0) >= 1000000000);
+  const dashboard = buildExecutiveDecisionDashboard();
 
   return `
     ${renderPageHeader(
       "EXECUTIVE DASHBOARD",
       "経営ダッシュボード",
-      "経営層・本部長が、全社の案件状態、要注意シグナル、報告候補を俯瞰する画面です。",
-      `<button class="btn primary" data-view="attention-signals">要注意シグナルを見る</button>`,
+      "今後の売上、正社員要員、外注最適化、採算、重大障害を短時間で判断する画面です。",
+      `<button class="btn primary" data-action="toggle-dashboard-settings">表示設定</button><button class="btn" data-view="ai-qa">AIに質問する</button>`,
     )}
-    <div class="grid cols-5">
-      ${metricCard("総案件数", state.cases.length, "40〜50件を俯瞰", "good")}
-      ${metricCard("危険案件数", criticalCases.length, "総合状態が危険", "danger")}
-      ${metricCard("注意案件数", attentionCases.length, "総合状態が注意", "warning")}
-      ${metricCard("要注意シグナル数", attentionSignals().length, "上位層がウォッチ", "warning")}
-      ${metricCard("幹部会報告候補数", execCandidates.length, "上位判断候補", "danger")}
-      ${metricCard("採算危険案件数", profitabilityCritical.length, "プロジェクト型", "danger")}
-      ${metricCard("期限危険案件数", deadlineCritical.length, "定型業務型", "danger")}
-      ${metricCard("組織コンディション要注意件数", orgSignals.length, "課単位の傾向", "warning")}
-      ${metricCard("前月比で悪化した案件数", worsening.length, "推移が悪化", "warning")}
-      ${metricCard("二桁億円規模の危険案件数", largeCritical.length, "10億円以上", "danger")}
+    ${renderExecutiveDashboardControls()}
+    ${renderExecutiveDashboardMessage()}
+    ${renderRevenueForecast(buildRevenueForecast())}
+    ${renderExecutiveKpiCards(dashboard)}
+    <div class="executive-dashboard-layout">
+      <div class="executive-dashboard-main">
+        ${renderExecutiveDashboardSections(dashboard)}
+      </div>
+      ${state.executiveDashboard.settingsOpen ? renderExecutiveSettingsPanel() : ""}
     </div>
-    <section class="section grid cols-2">
-      <div class="panel">
-        <h3>予兆スコア上位の要注意シグナル</h3>
-        ${renderTable(
-          ["シグナル", "関連案件", "カテゴリ", "スコア"],
-          attentionSignals()
-            .sort((a, b) => b.riskScore - a.riskScore)
-            .slice(0, 6)
-            .map((signal) => [
-              escapeHtml(signal.title),
-              renderRelatedCaseButton(signal.relatedCaseId),
-              badge(labels.signalCategory[signal.category], "info"),
-              renderScore(signal.riskScore),
-            ]),
-        )}
-      </div>
-      <div class="panel">
-        <h3>悪化傾向の案件</h3>
-        ${renderTable(
-          ["案件", "タイプ", "状態", "報告先"],
-          worsening.slice(0, 8).map((item) => [
-            renderCaseButton(item),
-            badge(labels.caseType[item.caseType], "neutral"),
-            renderOverallStatus(item.status),
-            escapeHtml(labels.nextReportTo[item.nextReportTo]),
-          ]),
-        )}
-      </div>
-    </section>
-    <section class="section grid cols-2">
-      <div class="panel">
-        <h3>幹部会に上げるべき候補</h3>
-        ${renderTable(
-          ["候補", "理由", "推移", "支援"],
-          execCandidates.slice(0, 8).map((item) => [
-            renderCaseButton(item),
-            escapeHtml(reportReason(item)),
-            renderTrend(item.trend),
-            escapeHtml(labels.supportNeeded[item.supportNeeded]),
-          ]),
-        )}
-      </div>
-      <div class="panel">
-        <h3>部門別の注意・危険案件数</h3>
-        ${renderBarList(countDepartmentRisk())}
-      </div>
-    </section>
   `;
 }
 
-function renderPortfolio() {
-  const rows = filteredCases();
+function renderRequests() {
+  const rows = filteredRequests();
   return `
     ${renderPageHeader(
-      "CASE PORTFOLIO",
-      "案件ポートフォリオ",
-      "常時40〜50件ある案件群を、タイプ・状態・推移・報告候補・リスク軸で俯瞰します。",
-      `<button class="btn primary" data-view="weekly-update">週次一言更新</button>`,
+      "REQUESTS",
+      "相談～見積一覧",
+      "正式案件になる前の需要と見積状況を、背景、所管課、予算化予定、次アクションで可視化します。",
+      `<button class="btn primary" data-view="request-detail">選択中の詳細</button>`,
     )}
-    ${renderPortfolioFilters()}
+    ${renderRequestFilters()}
     ${renderTable(
-      ["案件名", "タイプ", "所管部門", "責任者", "金額または期限", "総合状態", "推移", "状態軸", "要注意", "最終更新", "次回報告先"],
+      ["相談ID", "相談タイトル", "依頼元", "背景", "対象システム", "所管課", "希望時期", "規模", "予算化", "状態", "要注意", "最終更新", "次アクション"],
       rows.map((item) => [
-        renderCaseButton(item),
-        badge(labels.caseType[item.caseType], item.caseType === "project" ? "info" : "neutral"),
+        escapeHtml(item.requestCode),
+        renderRequestButton(item),
+        escapeHtml(item.requesterCompany),
+        badge(labels.background[item.background], "neutral"),
+        escapeHtml(item.targetSystem),
         escapeHtml(item.department),
-        escapeHtml(item.owner),
-        escapeHtml(amountOrDeadline(item)),
-        renderOverallStatus(item.status),
-        renderTrend(item.trend),
-        renderAxisBadges(item),
-        String(item.attentionSignalCount),
+        escapeHtml(item.desiredTiming),
+        badge(labels.roughSize[item.roughSize], item.roughSize === "large" || item.roughSize === "very_large" ? "high" : "neutral"),
+        escapeHtml(labels.budgetPlan[item.budgetPlan]),
+        badge(labels.requestStatus[item.status], item.status === "estimating" ? "medium" : "info"),
+        String(attentionCount("request", item.id)),
         escapeHtml(item.lastUpdatedAt),
-        escapeHtml(labels.nextReportTo[item.nextReportTo]),
+        escapeHtml(item.nextAction),
       ]),
       "portfolio-table",
     )}
   `;
 }
 
-function renderPortfolioFilters() {
-  const deptOptions = ["all", ...unique(state.cases.map((item) => item.department))];
+function renderRequestFilters() {
+  const filter = state.filters.request;
   return `
     <div class="filter-bar">
-      ${filterSelect("caseType", "案件タイプ", [["all", "すべて"], ["project", "プロジェクト型"], ["routine", "定型業務型"]])}
-      ${filterSelect("department", "部門", deptOptions.map((value) => [value, value === "all" ? "すべて" : value]))}
-      ${filterSelect("status", "総合状態", [["all", "すべて"], ["normal", "正常"], ["attention", "注意"], ["critical", "危険"], ["completed", "完了"]])}
-      ${filterSelect("trend", "推移", [["all", "すべて"], ["improving", "改善"], ["stable", "横ばい"], ["worsening", "悪化"]])}
-      ${filterSelect("attentionOnly", "要注意シグナル", [["all", "すべて"], ["yes", "あり"]])}
-      ${filterSelect("reportTo", "報告候補", [["all", "すべて"], ["executive_meeting", "幹部会"], ["division_management_meeting", "本部基幹職会議"]])}
-      ${filterSelect("profitabilityCritical", "採算危険", [["all", "すべて"], ["yes", "あり"]])}
-      ${filterSelect("deadlineCritical", "期限危険", [["all", "すべて"], ["yes", "あり"]])}
-      ${filterSelect("amountScale", "金額規模", [["all", "すべて"], ["large", "10億円以上"], ["mid", "1億円以上"]])}
-      <button class="btn" data-reset-filters>フィルタ解除</button>
+      ${filterSelect("request", "requesterCompany", "依頼元", [["all", "すべて"], ...unique(state.requests.map((item) => item.requesterCompany)).map((value) => [value, value])])}
+      ${filterSelect("request", "department", "所管課", [["all", "すべて"], ...unique(state.requests.map((item) => item.department)).map((value) => [value, value])])}
+      ${filterSelect("request", "background", "背景分類", [["all", "すべて"], ...Object.entries(labels.background)])}
+      ${filterSelect("request", "status", "状態", [["all", "すべて"], ...Object.entries(labels.requestStatus)])}
+      ${filterSelect("request", "budgetPlan", "予算化予定", [["all", "すべて"], ...Object.entries(labels.budgetPlan)])}
+      ${filterSelect("request", "attentionOnly", "要注意", [["all", "すべて"], ["yes", "あり"]])}
+      <button class="btn" data-action="reset-filters" data-filter-group="request">フィルタ解除</button>
     </div>
   `;
 }
 
-function filterSelect(key, label, options) {
-  return `
-    <label class="filter-field">
-      <span>${escapeHtml(label)}</span>
-      <select data-filter="${escapeAttr(key)}">
-        ${options.map(([value, text]) => `<option value="${escapeAttr(value)}" ${state.filters[key] === value ? "selected" : ""}>${escapeHtml(text)}</option>`).join("")}
-      </select>
-    </label>
-  `;
-}
-
-function renderProjectCases() {
+function renderRequestDetail() {
+  const request = findRequest(state.selectedRequestId) || state.requests[0];
+  if (!request) return `<div class="empty">相談～見積の対象がありません。</div>`;
+  const histories = relatedRequestHistories(request.id);
+  const estimates = relatedEstimates(request.id);
+  const projects = relatedProjects(request.id);
+  const signals = relatedSignals("request", request.id);
   return `
     ${renderPageHeader(
-      "PROJECT CASES",
-      "プロジェクト型案件一覧",
-      "複数年・高額のプロジェクトを、進捗・採算・品質・要員・顧客の5軸で確認します。",
+      "REQUEST DETAIL",
+      "相談～見積詳細",
+      "1つの相談の経緯、関連見積、関連プロジェクト、要注意シグナルを追います。",
+      `<button class="btn" data-view="requests">一覧へ</button><button class="btn primary" data-action="create-estimate" data-request-id="${escapeAttr(request.id)}">見積を作成</button>`,
     )}
-    ${renderTable(
-      ["案件名", "顧客名", "金額規模", "期間", "現在フェーズ", "進捗", "採算", "品質", "要員", "顧客", "要注意", "推移", "次回報告先"],
-      projectCases().map((item) => {
-        const detail = projectDetail(item.id);
-        return [
-          renderCaseButton(item),
-          escapeHtml(detail.customerName),
-          escapeHtml(formatCurrency(detail.contractAmount)),
-          escapeHtml(`${detail.startDate}〜${detail.plannedEndDate}`),
-          escapeHtml(detail.currentPhase),
-          renderStatusLevel(detail.scheduleStatus),
-          renderStatusLevel(detail.profitabilityStatus),
-          renderStatusLevel(detail.qualityStatus),
-          renderStatusLevel(detail.staffingStatus),
-          renderStatusLevel(detail.customerStatus),
-          String(item.attentionSignalCount),
-          renderTrend(item.trend),
-          escapeHtml(labels.nextReportTo[item.nextReportTo]),
-        ];
-      }),
-    )}
-  `;
-}
-
-function renderRoutineCases() {
-  return `
-    ${renderPageHeader(
-      "ROUTINE CASES",
-      "定型業務型案件一覧",
-      "予算策定、決算、監査、親会社提出資料などを、期限・工程・承認・回答・品質の5軸で確認します。",
-    )}
-    ${renderTable(
-      ["案件名", "期限", "提出先", "現在工程", "完了率", "期限", "工程", "承認", "回答", "品質", "未提出部門", "承認待ち", "期限超過", "次回報告先"],
-      routineCases().map((item) => {
-        const detail = routineDetail(item.id);
-        return [
-          renderCaseButton(item),
-          escapeHtml(detail.deadline),
-          escapeHtml(detail.submitTo),
-          escapeHtml(detail.currentStep),
-          `${detail.progressRate}%`,
-          renderStatusLevel(detail.deadlineStatus),
-          renderStatusLevel(detail.processStatus),
-          renderStatusLevel(detail.approvalStatus),
-          renderStatusLevel(detail.responseStatus),
-          renderStatusLevel(detail.qualityStatus),
-          String(detail.notSubmittedDepartmentCount),
-          String(detail.pendingApprovalCount),
-          String(detail.overdueTaskCount),
-          escapeHtml(labels.nextReportTo[item.nextReportTo]),
-        ];
-      }),
-    )}
-  `;
-}
-
-function renderCaseDetail() {
-  const item = findCase(state.selectedCaseId) || state.cases[0];
-  if (!item) return `<div class="empty">案件がありません。</div>`;
-  const relatedSignals = state.signals.filter((signal) => signal.relatedCaseId === item.id);
-  const relatedAttention = relatedSignals.filter((signal) => signal.isAttentionSignal);
-  const histories = state.histories.filter((history) => history.caseId === item.id).sort((a, b) => b.reportedDate.localeCompare(a.reportedDate));
-
-  return `
-    ${renderPageHeader(
-      "CASE DETAIL",
-      "案件詳細",
-      "案件タイプに応じて、プロジェクト型は5つのプロジェクト軸、定型業務型は5つの業務軸で詳細を確認します。",
-      `<button class="btn" data-view="portfolio">ポートフォリオへ</button><button class="btn primary" data-view="weekly-update">週次更新</button>`,
-    )}
-    <section class="section split">
-      <div class="panel">
-        <div class="section-header">
-          <div>
-            <h3>${escapeHtml(item.caseName)}</h3>
-            <p class="section-note">${escapeHtml(item.latestComment)}</p>
-          </div>
-          <div class="stack">${renderOverallStatus(item.status)}${renderTrend(item.trend)}</div>
+    <section class="section panel">
+      <div class="section-header">
+        <div>
+          <h3>${escapeHtml(request.title)}</h3>
+          <p class="section-note">${escapeHtml(request.summary)}</p>
         </div>
-        ${item.caseType === "project" ? renderProjectDetailDefinition(item) : renderRoutineDetailDefinition(item)}
+        ${badge(labels.requestStatus[request.status], "info")}
       </div>
-      <div class="panel">
-        <h3>AI要約</h3>
-        <p class="section-note">${escapeHtml(aiCaseSummary(item, relatedSignals))}</p>
+      <dl class="definition-list">
+        <dt>相談ID</dt><dd>${escapeHtml(request.requestCode)}</dd>
+        <dt>依頼元</dt><dd>${escapeHtml(request.requesterCompany)}</dd>
+        <dt>背景</dt><dd>${badge(labels.background[request.background], "neutral")}</dd>
+        <dt>対象システム</dt><dd>${escapeHtml(request.targetSystem)}</dd>
+        <dt>希望時期</dt><dd>${escapeHtml(request.desiredTiming)}</dd>
+        <dt>所管課</dt><dd>${escapeHtml(request.department)}</dd>
+        <dt>想定スキル</dt><dd>${escapeHtml(request.expectedSkill)}</dd>
+        <dt>概算規模</dt><dd>${escapeHtml(labels.roughSize[request.roughSize])}</dd>
+        <dt>予算化予定</dt><dd>${escapeHtml(labels.budgetPlan[request.budgetPlan])}</dd>
+        <dt>次アクション</dt><dd>${escapeHtml(request.nextAction)}</dd>
+      </dl>
+      <div class="actions">
+        <button class="btn" data-action="share-request" data-request-id="${escapeAttr(request.id)}">本部長共有候補にする</button>
+        <button class="btn" data-view="signal-form" data-request-id="${escapeAttr(request.id)}">要注意シグナルを追加</button>
+        <button class="btn primary" data-action="create-project" data-request-id="${escapeAttr(request.id)}">プロジェクト化する</button>
+      </div>
+      ${renderAiDisclosure(
+        "AI要約・示唆",
+        `<p class="section-note">${escapeHtml(aiRequestSummary(request))}</p>
         <div class="axis-grid section">
-          <div class="axis-card">
-            <h4>必要な支援</h4>
-            <p>${escapeHtml(labels.supportNeeded[item.supportNeeded])}</p>
-          </div>
-          <div class="axis-card">
-            <h4>次回報告先</h4>
-            <p>${escapeHtml(labels.nextReportTo[item.nextReportTo])}</p>
-          </div>
-          <div class="axis-card">
-            <h4>要注意シグナル</h4>
-            <p>${relatedAttention.length} 件</p>
-          </div>
-        </div>
-      </div>
+          <div class="axis-card"><h4>関連見積</h4><p>${estimates.length} 件</p></div>
+          <div class="axis-card"><h4>関連プロジェクト</h4><p>${projects.length} 件</p></div>
+          <div class="axis-card"><h4>要注意シグナル</h4><p>${attentionCount("request", request.id)} 件</p></div>
+        </div>`,
+      )}
     </section>
-    <section class="section grid cols-2">
-      <div class="panel">
-        <h3>関連要注意シグナル</h3>
-        ${renderTable(
-          ["シグナル", "カテゴリ", "スコア", "理由"],
-          relatedAttention.map((signal) => [
-            escapeHtml(signal.title),
-            badge(labels.signalCategory[signal.category], "info"),
-            renderScore(signal.riskScore),
-            escapeHtml(signal.attentionReason || ""),
-          ]),
-        )}
-      </div>
-      <div class="panel">
-        <h3>関連シグナル</h3>
-        ${renderTable(
-          ["ID", "タイトル", "状態", "作成日"],
-          relatedSignals.map((signal) => [
-            escapeHtml(signal.signalCode),
-            escapeHtml(signal.title),
-            badge(labels.signalStatus[signal.status], signal.status === "attention" ? "high" : "neutral"),
-            escapeHtml(signal.createdAt),
-          ]),
-        )}
-      </div>
-    </section>
-    <section class="section grid cols-2">
-      <div class="panel">
-        <h3>週次コメント履歴</h3>
-        <div class="timeline section">
-          ${histories
-            .slice(0, 8)
-            .map((history) => `
-              <div class="timeline-item">
-                <strong>${escapeHtml(history.reportedDate)} / ${escapeHtml(labels.overallStatus[history.overallStatus])} / ${escapeHtml(labels.trend[history.trend])}</strong>
-                <span>${escapeHtml(history.comment)} / 支援: ${escapeHtml(labels.supportNeeded[history.supportNeeded])}</span>
-              </div>
-            `)
-            .join("")}
-        </div>
-      </div>
-      <div class="panel">
-        <h3>状態推移</h3>
-        ${renderBarList(historyTrendBars(histories))}
-      </div>
-    </section>
+    ${renderTabs("request", [
+      ["history", "相談履歴", `
+        ${renderTimeline(histories, (history) => `${history.date} ${history.title}`, (history) => `${history.memo} / ${history.createdBy}`)}
+        ${renderRequestHistoryForm(request)}
+      `],
+      ["estimates", "関連見積", renderTable(["見積", "版", "金額", "状態"], estimates.map((item) => [renderEstimateButton(item), String(item.version), escapeHtml(formatCurrency(item.amount)), badge(labels.estimateStatus[item.status], "neutral")]))],
+      ["projects", "関連プロジェクト", renderTable(["プロジェクト", "状態", "推移", "報告先"], projects.map((item) => [renderProjectButton(item), renderOverallStatus(item.overallStatus), renderTrend(item.trend), escapeHtml(labels.reportTo[item.nextReportTo])]))],
+      ["signals", "関連シグナル", renderSignalTable(signals)],
+    ])}
   `;
 }
 
-function renderProjectDetailDefinition(item) {
-  const detail = projectDetail(item.id);
+function renderRequestHistoryForm(request) {
   return `
-    <dl class="definition-list">
-      <dt>案件タイプ</dt><dd>${badge(labels.caseType[item.caseType], "info")}</dd>
-      <dt>顧客名</dt><dd>${escapeHtml(detail.customerName)}</dd>
-      <dt>契約金額</dt><dd>${escapeHtml(formatCurrency(detail.contractAmount))}</dd>
-      <dt>期間</dt><dd>${escapeHtml(`${detail.startDate}〜${detail.plannedEndDate}`)}</dd>
-      <dt>現在フェーズ</dt><dd>${escapeHtml(detail.currentPhase)}</dd>
-      <dt>責任者</dt><dd>${escapeHtml(item.owner)}</dd>
-      <dt>PM</dt><dd>${escapeHtml(item.manager)}</dd>
-      <dt>状態軸</dt><dd>${renderAxisBadges(item)}</dd>
-      <dt>変更要望</dt><dd>${detail.changeRequestCount} 件</dd>
-      <dt>未解決課題</dt><dd>${detail.openIssueCount} 件</dd>
-      <dt>マイルストーン</dt><dd>${escapeHtml(detail.milestoneStatus)}</dd>
-    </dl>
+    <form id="request-history-form" class="section">
+      <input type="hidden" name="requestId" value="${escapeAttr(request.id)}">
+      <div class="form-grid">
+        <div class="field"><label>日付</label><input name="date" type="date" value="${TODAY_ISO}"></div>
+        <div class="field"><label>記入者</label><input name="createdBy" value="担当者"></div>
+        <div class="field full"><label>タイトル</label><input name="title" required placeholder="例：追加確認"></div>
+        <div class="field full"><label>メモ</label><textarea name="memo" required placeholder="短い相談メモを追加"></textarea></div>
+      </div>
+      <div class="actions"><button class="btn primary" type="submit">相談メモを追加</button></div>
+    </form>
   `;
 }
 
-function renderRoutineDetailDefinition(item) {
-  const detail = routineDetail(item.id);
+function renderEstimates() {
+  const rows = filteredEstimates();
   return `
-    <dl class="definition-list">
-      <dt>案件タイプ</dt><dd>${badge(labels.caseType[item.caseType], "neutral")}</dd>
-      <dt>期限</dt><dd>${escapeHtml(detail.deadline)}</dd>
-      <dt>提出先</dt><dd>${escapeHtml(detail.submitTo)}</dd>
-      <dt>工程テンプレート</dt><dd>${escapeHtml(detail.processTemplate)}</dd>
-      <dt>現在工程</dt><dd>${escapeHtml(detail.currentStep)}</dd>
-      <dt>完了率</dt><dd>${detail.progressRate}%</dd>
-      <dt>責任者</dt><dd>${escapeHtml(item.owner)}</dd>
-      <dt>状態軸</dt><dd>${renderAxisBadges(item)}</dd>
-      <dt>未提出部門数</dt><dd>${detail.notSubmittedDepartmentCount} 件</dd>
-      <dt>承認待ち件数</dt><dd>${detail.pendingApprovalCount} 件</dd>
-      <dt>期限超過タスク</dt><dd>${detail.overdueTaskCount} 件</dd>
-    </dl>
+    ${renderPageHeader(
+      "ESTIMATES",
+      "見積一覧",
+      "見積作成状況、版数、根拠の充足度、指摘有無を確認します。",
+      `<button class="btn primary" data-view="estimate-detail">選択中の見積支援</button>`,
+    )}
+    ${renderEstimateFilters()}
+    ${renderTable(
+      ["見積ID", "関連相談", "見積タイトル", "依頼元", "種別", "版数", "金額", "工数", "状態", "作成者", "提出期限", "提出日", "根拠", "指摘", "関連シグナル"],
+      rows.map((item) => {
+        const request = findRequest(item.requestId);
+        return [
+          escapeHtml(item.estimateCode),
+          request ? renderRequestButton(request) : badge("なし", "neutral"),
+          renderEstimateButton(item),
+          escapeHtml(request?.requesterCompany || ""),
+          badge(labels.estimateType[item.estimateType], "info"),
+          String(item.version),
+          escapeHtml(formatCurrency(item.amount)),
+          `${item.personMonths}人月`,
+          badge(labels.estimateStatus[item.status], item.status === "feedback" ? "high" : "neutral"),
+          escapeHtml(item.createdBy),
+          escapeHtml(item.dueDate),
+          escapeHtml(item.submittedDate || "-"),
+          badge(labels.explanationQuality[item.explanationQuality], item.explanationQuality === "weak" ? "high" : "neutral"),
+          item.feedbackCount > 0 ? badge("あり", "high") : badge("なし", "low"),
+          String(attentionCount("estimate", item.id)),
+        ];
+      }),
+      "portfolio-table",
+    )}
   `;
 }
 
-function renderSignals() {
+function renderEstimateFilters() {
+  return `
+    <div class="filter-bar">
+      ${filterSelect("estimate", "estimateType", "見積種別", [["all", "すべて"], ...Object.entries(labels.estimateType)])}
+      ${filterSelect("estimate", "status", "状態", [["all", "すべて"], ...Object.entries(labels.estimateStatus)])}
+      ${filterSelect("estimate", "explanationQuality", "根拠充足度", [["all", "すべて"], ...Object.entries(labels.explanationQuality)])}
+      ${filterSelect("estimate", "feedbackOnly", "指摘", [["all", "すべて"], ["yes", "あり"]])}
+      <button class="btn" data-action="reset-filters" data-filter-group="estimate">フィルタ解除</button>
+    </div>
+  `;
+}
+
+function renderEstimateDetail() {
+  const estimate = findEstimate(state.selectedEstimateId) || state.estimates[0];
+  if (!estimate) return `<div class="empty">見積がありません。</div>`;
+  const request = findRequest(estimate.requestId);
+  const histories = relatedEstimateHistories(estimate.id);
+  const ai = pseudoEstimateSupport(estimate);
+  return `
+    ${renderPageHeader(
+      "ESTIMATE DETAIL",
+      "見積詳細 / 見積支援AI",
+      "見積版、前提、除外事項、指摘履歴を蓄積し、疑似AIが説明文と不足前提を提示します。",
+      `<button class="btn" data-view="estimates">一覧へ</button><button class="btn primary" data-action="create-estimate-version" data-estimate-id="${escapeAttr(estimate.id)}">見積版を追加</button>`,
+    )}
+    <section class="section panel">
+      <div class="section-header">
+        <div>
+          <h3>${escapeHtml(estimate.title)}</h3>
+          <p class="section-note">${escapeHtml(request?.title || "関連相談なし")}</p>
+        </div>
+        ${badge(labels.estimateStatus[estimate.status], "info")}
+      </div>
+      <dl class="definition-list">
+        <dt>見積ID</dt><dd>${escapeHtml(estimate.estimateCode)}</dd>
+        <dt>関連相談</dt><dd>${request ? renderRequestButton(request) : "なし"}</dd>
+        <dt>見積版数</dt><dd>第${estimate.version}版</dd>
+        <dt>見積種別</dt><dd>${escapeHtml(labels.estimateType[estimate.estimateType])}</dd>
+        <dt>前提条件</dt><dd>${escapeHtml(estimate.assumptions)}</dd>
+        <dt>除外事項</dt><dd>${escapeHtml(estimate.exclusions)}</dd>
+        <dt>工数</dt><dd>${estimate.personMonths}人月</dd>
+        <dt>金額</dt><dd>${escapeHtml(formatCurrency(estimate.amount))}</dd>
+        <dt>リスク係数</dt><dd>${escapeHtml(labels.riskLevel[estimate.riskLevel])}</dd>
+        <dt>提出期限</dt><dd>${escapeHtml(estimate.dueDate)}</dd>
+        <dt>根拠充足度</dt><dd>${escapeHtml(labels.explanationQuality[estimate.explanationQuality])}</dd>
+      </dl>
+      <div class="actions">
+        <button class="btn">見積前提を追加</button>
+        <button class="btn">指摘・コメントを追加</button>
+        <button class="btn warning">AIで説明文を生成</button>
+        <button class="btn warning">AIで不足前提をチェック</button>
+        <button class="btn">類似過去見積を表示</button>
+      </div>
+      ${renderAiDisclosure(
+        "AI支援パネル",
+        `
+        <dl class="definition-list">
+          <dt>類似過去見積</dt><dd>${escapeHtml(ai.similar)}</dd>
+          <dt>不足前提</dt><dd>${escapeHtml(ai.missingAssumptions)}</dd>
+          <dt>確認質問</dt><dd>${escapeHtml(ai.questions)}</dd>
+          <dt>WBS案</dt><dd>${escapeHtml(ai.wbs)}</dd>
+          <dt>説明文案</dt><dd>${escapeHtml(ai.explanation)}</dd>
+          <dt>除外事項候補</dt><dd>${escapeHtml(ai.exclusions)}</dd>
+          <dt>根拠が弱い項目</dt><dd>${escapeHtml(ai.weakPoints)}</dd>
+        </dl>`,
+      )}
+    </section>
+    ${renderTabs("estimate", [
+      ["history", "見積履歴", `
+        ${renderTimeline(histories, (history) => `${history.date} ${history.title}`, (history) => `${history.memo} / ${history.createdBy}`)}
+        ${renderEstimateHistoryForm(estimate)}
+      `],
+      ["signals", "関連シグナル", renderSignalTable(relatedSignals("estimate", estimate.id))],
+    ])}
+  `;
+}
+
+function renderEstimateHistoryForm(estimate) {
+  return `
+    <form id="estimate-history-form" class="section">
+      <input type="hidden" name="estimateId" value="${escapeAttr(estimate.id)}">
+      <div class="form-grid">
+        <div class="field"><label>日付</label><input name="date" type="date" value="${TODAY_ISO}"></div>
+        <div class="field"><label>記入者</label><input name="createdBy" value="${escapeAttr(estimate.createdBy)}"></div>
+        <div class="field full"><label>タイトル</label><input name="title" required placeholder="例：前提条件を追加"></div>
+        <div class="field full"><label>メモ</label><textarea name="memo" required placeholder="依頼元からの指摘、前提追加、除外事項の変更など"></textarea></div>
+      </div>
+      <div class="actions"><button class="btn primary" type="submit">指摘・コメントを追加</button></div>
+    </form>
+  `;
+}
+
+function renderProjects() {
+  const rows = filteredProjects();
+  return `
+    ${renderPageHeader(
+      "PROJECT PORTFOLIO",
+      "プロジェクトポートフォリオ",
+      "進捗、採算、品質、要員、顧客の5軸と推移で、複数プロジェクトを俯瞰します。",
+      `<button class="btn primary" data-view="project-detail">選択中の詳細</button>`,
+    )}
+    ${renderProjectFilters()}
+    ${renderTable(
+      ["プロジェクトID", "プロジェクト名", "依頼元", "部門", "PM", "金額", "期間", "フェーズ", "次の予定", "総合", "推移", "進捗", "採算", "品質", "要員", "顧客", "要注意", "見積改訂", "最終更新", "次回報告先"],
+      rows.map((item) => {
+        const plan = nextProjectPlan(item.id);
+        return [
+          escapeHtml(item.projectCode),
+          renderProjectButton(item),
+          escapeHtml(item.requesterCompany),
+          escapeHtml(item.department),
+          escapeHtml(item.pm),
+          escapeHtml(formatCurrency(item.amount)),
+          escapeHtml(`${item.startDate}〜${item.plannedEndDate}`),
+          escapeHtml(item.currentPhase),
+          plan ? `${escapeHtml(plan.date)}<div class="cell-sub">${escapeHtml(plan.title)}</div>` : badge("未登録", "neutral"),
+          renderOverallStatus(item.overallStatus),
+          renderTrend(item.trend),
+          renderStatusLevel(item.scheduleStatus),
+          renderStatusLevel(item.profitabilityStatus),
+          renderStatusLevel(item.qualityStatus),
+          renderStatusLevel(item.staffingStatus),
+          renderStatusLevel(item.customerStatus),
+          String(attentionCount("project", item.id)),
+          String(item.estimateRevisionCount),
+          escapeHtml(item.lastUpdatedAt),
+          escapeHtml(labels.reportTo[item.nextReportTo]),
+        ];
+      }),
+      "portfolio-table",
+    )}
+  `;
+}
+
+function renderProjectFilters() {
+  return `
+    <div class="filter-bar">
+      ${filterSelect("project", "department", "所管部門", [["all", "すべて"], ...unique(state.projects.map((item) => item.department)).map((value) => [value, value])])}
+      ${filterSelect("project", "overallStatus", "総合状態", [["all", "すべて"], ...Object.entries(labels.overallStatus)])}
+      ${filterSelect("project", "trend", "推移", [["all", "すべて"], ...Object.entries(labels.trend)])}
+      ${filterSelect("project", "attentionOnly", "要注意", [["all", "すべて"], ["yes", "あり"]])}
+      ${filterSelect("project", "reportTo", "報告候補", [["all", "すべて"], ["division", "本部長"], ["executive", "幹部会"]])}
+      ${filterSelect("project", "amountScale", "金額規模", [["all", "すべて"], ["large", "5億円以上"], ["mid", "1億円以上"]])}
+      <button class="btn" data-action="reset-filters" data-filter-group="project">フィルタ解除</button>
+    </div>
+  `;
+}
+
+function renderProjectDetail() {
+  const project = findProject(state.selectedProjectId) || state.projects[0];
+  if (!project) return `<div class="empty">プロジェクトがありません。</div>`;
+  const updates = relatedProjectUpdates(project.id);
+  const plans = relatedProjectPlans(project.id);
+  const nextPlan = nextProjectPlan(project.id);
+  const estimates = state.estimates.filter((item) => item.projectId === project.id || item.requestId === project.requestId);
+  const request = findRequest(project.requestId);
+  return `
+    ${renderPageHeader(
+      "PROJECT DETAIL",
+      "プロジェクト詳細",
+      "プロジェクト状態、更新履歴、見積経緯、要注意シグナルを確認します。",
+      `<button class="btn" data-view="projects">一覧へ</button><button class="btn primary" data-action="migrate-operation" data-project-id="${escapeAttr(project.id)}">保守・運用へ移行</button>`,
+    )}
+    <section class="section panel">
+      <div class="section-header">
+        <div>
+          <h3>${escapeHtml(project.title)}</h3>
+          <p class="section-note">${escapeHtml(project.latestComment)}</p>
+        </div>
+        <div class="stack">${renderOverallStatus(project.overallStatus)}${renderTrend(project.trend)}</div>
+      </div>
+      <dl class="definition-list">
+        <dt>関連相談</dt><dd>${request ? renderRequestButton(request) : "なし"}</dd>
+        <dt>関連見積</dt><dd>${estimates.length} 件</dd>
+        <dt>依頼元</dt><dd>${escapeHtml(project.requesterCompany)}</dd>
+        <dt>金額</dt><dd>${escapeHtml(formatCurrency(project.amount))}</dd>
+        <dt>期間</dt><dd>${escapeHtml(`${project.startDate}〜${project.plannedEndDate}`)}</dd>
+        <dt>現在フェーズ</dt><dd>${escapeHtml(project.currentPhase)}</dd>
+        <dt>次の予定</dt><dd>${nextPlan ? `${escapeHtml(nextPlan.date)} ${escapeHtml(nextPlan.title)} ${badge(labels.projectPlanStatus[nextPlan.status], planTone(nextPlan.status))}` : "未登録"}</dd>
+        <dt>責任者</dt><dd>${escapeHtml(project.owner)}</dd>
+        <dt>PM</dt><dd>${escapeHtml(project.pm)}</dd>
+        <dt>状態軸</dt><dd>${renderProjectAxisBadges(project)}</dd>
+        <dt>次回報告先</dt><dd>${escapeHtml(labels.reportTo[project.nextReportTo])}</dd>
+      </dl>
+      <div class="actions">
+        <button class="btn" data-tab-group="project" data-tab="plans">予定を見る</button>
+        <button class="btn" data-tab-group="project" data-tab="updates">更新履歴を見る</button>
+        <button class="btn">課題を追加</button>
+        <button class="btn" data-view="signal-form" data-project-id="${escapeAttr(project.id)}">要注意シグナルを追加</button>
+        <button class="btn" data-action="create-estimate" data-request-id="${escapeAttr(project.requestId)}">見積を追加</button>
+        <button class="btn">会議メモを追加</button>
+        <button class="btn">関連資料を追加</button>
+      </div>
+      ${renderAiDisclosure(
+        "AI要約・示唆",
+        `<p class="section-note">${escapeHtml(aiProjectSummary(project))}</p>
+        ${state.lastAiResult?.projectId === project.id ? renderProjectAiResult(state.lastAiResult) : ""}`,
+      )}
+    </section>
+    ${renderTabs("project", [
+      ["plans", "予定", `
+        ${renderProjectPlansTable(plans)}
+        ${renderProjectPlanForm(project)}
+      `],
+      ["updates", "更新履歴", `
+        ${renderTimeline(updates, (update) => `${update.date} ${labels.overallStatus[update.overallStatus]} / ${labels.trend[update.trend]}`, (update) => `${update.comment} / 支援: ${labels.supportNeeded[update.supportNeeded]} / AI: ${update.aiSummary}`)}
+        ${renderProjectUpdateForm(project)}
+      `],
+      ["estimates", "見積経緯", renderTable(["見積", "版", "金額", "状態"], estimates.map((item) => [renderEstimateButton(item), String(item.version), escapeHtml(formatCurrency(item.amount)), badge(labels.estimateStatus[item.status], "neutral")]))],
+      ["signals", "関連シグナル", renderSignalTable(relatedSignals("project", project.id))],
+    ])}
+  `;
+}
+
+function renderProjectPlansTable(plans) {
+  return renderTable(
+    ["日付", "種別", "予定", "担当", "状態", "メモ"],
+    plans.map((plan) => [
+      escapeHtml(plan.date),
+      badge(labels.projectPlanType[plan.type], "info"),
+      escapeHtml(plan.title),
+      escapeHtml(plan.owner),
+      badge(labels.projectPlanStatus[plan.status], planTone(plan.status)),
+      escapeHtml(plan.memo),
+    ]),
+  );
+}
+
+function renderProjectPlanForm(project) {
+  return `
+    <form id="project-plan-form" class="section">
+      <input type="hidden" name="projectId" value="${escapeAttr(project.id)}">
+      <div class="form-grid">
+        <div class="field"><label>予定日</label><input name="date" type="date" value="${TODAY_ISO}"></div>
+        <div class="field"><label>種別</label><select name="type">${renderEnumOptions(labels.projectPlanType, "milestone")}</select></div>
+        <div class="field"><label>状態</label><select name="status">${renderEnumOptions(labels.projectPlanStatus, "planned")}</select></div>
+        <div class="field"><label>担当</label><input name="owner" value="${escapeAttr(project.pm)}"></div>
+        <div class="field full"><label>予定タイトル</label><input name="title" required placeholder="例：基本設計レビュー"></div>
+        <div class="field"><label>現在フェーズ更新</label><input name="phase" value="${escapeAttr(project.currentPhase)}"></div>
+        <div class="field full"><label>メモ</label><textarea name="memo" required placeholder="確認観点、合意したいこと、遅延時の対応など"></textarea></div>
+      </div>
+      <div class="actions"><button class="btn primary" type="submit">予定を追加</button></div>
+    </form>
+  `;
+}
+
+function renderProjectUpdateForm(project) {
+  return `
+    <form id="project-update-form" class="section">
+      <input type="hidden" name="projectId" value="${escapeAttr(project.id)}">
+      <div class="form-grid">
+        <div class="field"><label>日付</label><input name="date" type="date" value="${TODAY_ISO}"></div>
+        <div class="field"><label>総合状態</label><select name="overallStatus">${renderEnumOptions(labels.overallStatus, project.overallStatus)}</select></div>
+        <div class="field"><label>前回からの変化</label><select name="trend">${renderEnumOptions(labels.trend, project.trend)}</select></div>
+        <div class="field"><label>必要な支援</label><select name="supportNeeded">${renderEnumOptions(labels.supportNeeded, project.supportNeeded || "none")}</select></div>
+        <div class="field full"><label>一言コメント</label><textarea name="comment" required placeholder="例：追加見積の合意が遅れており、採算悪化のおそれがあります。">${escapeHtml(project.latestComment)}</textarea></div>
+      </div>
+      <div class="actions"><button class="btn primary" type="submit">週次更新を追加</button></div>
+    </form>
+  `;
+}
+
+function renderOperations() {
+  const rows = filteredOperations();
+  return `
+    ${renderPageHeader(
+      "OPERATIONS",
+      "保守・運用一覧",
+      "本番稼働後の問い合わせ、障害、小改修、監査対応、属人化リスクを可視化します。",
+      `<button class="btn primary" data-view="operation-detail">選択中の詳細</button>`,
+    )}
+    ${renderOperationFilters()}
+    ${renderTable(
+      ["システムID", "システム名", "依頼元", "担当課", "J-SOX", "運用負荷", "問い合わせ", "障害", "小改修", "監査", "未対応", "属人化", "後継者", "要注意", "最終更新"],
+      rows.map((item) => [
+        escapeHtml(item.systemCode),
+        renderOperationButton(item),
+        escapeHtml(item.requesterCompany),
+        escapeHtml(item.department),
+        item.isJSOX ? badge("対象", "high") : badge("対象外", "neutral"),
+        badge(labels.operationStatus[item.operationStatus], item.operationStatus === "high_load" || item.operationStatus === "audit" ? "high" : "neutral"),
+        String(item.inquiryCount),
+        String(item.incidentCount),
+        String(item.smallChangeCount),
+        String(item.auditTaskCount),
+        String(item.openIssueCount),
+        badge(labels.riskLevel[item.dependencyRisk], riskTone(item.dependencyRisk)),
+        badge(labels.riskLevel[item.successorRisk], riskTone(item.successorRisk)),
+        String(attentionCount("operation", item.id)),
+        escapeHtml(item.lastUpdatedAt),
+      ]),
+      "portfolio-table",
+    )}
+  `;
+}
+
+function renderOperationFilters() {
+  return `
+    <div class="filter-bar">
+      ${filterSelect("operation", "department", "担当課", [["all", "すべて"], ...unique(state.operationSystems.map((item) => item.department)).map((value) => [value, value])])}
+      ${filterSelect("operation", "jsoxOnly", "J-SOX", [["all", "すべて"], ["yes", "対象"]])}
+      ${filterSelect("operation", "status", "運用負荷", [["all", "すべて"], ...Object.entries(labels.operationStatus)])}
+      ${filterSelect("operation", "dependencyRisk", "属人化", [["all", "すべて"], ...Object.entries(labels.riskLevel)])}
+      ${filterSelect("operation", "attentionOnly", "要注意", [["all", "すべて"], ["yes", "あり"]])}
+      <button class="btn" data-action="reset-filters" data-filter-group="operation">フィルタ解除</button>
+    </div>
+  `;
+}
+
+function renderOperationDetail() {
+  const system = findOperation(state.selectedOperationSystemId) || state.operationSystems[0];
+  if (!system) return `<div class="empty">保守・運用対象がありません。</div>`;
+  const project = findProject(system.relatedProjectId);
+  const histories = relatedOperationHistories(system.id);
+  return `
+    ${renderPageHeader(
+      "OPERATION DETAIL",
+      "保守・運用詳細",
+      "問い合わせ、障害、小改修、監査対応を継続的に登録し、隠れた負荷や属人化リスクを見ます。",
+      `<button class="btn" data-view="operations">一覧へ</button><button class="btn primary" data-view="signal-form" data-operation-id="${escapeAttr(system.id)}">要注意シグナルを追加</button>`,
+    )}
+    <section class="section panel">
+      <div class="section-header">
+        <div>
+          <h3>${escapeHtml(system.systemName)}</h3>
+          <p class="section-note">${escapeHtml(system.nextAction)}</p>
+        </div>
+        ${badge(labels.operationStatus[system.operationStatus], "info")}
+      </div>
+      <dl class="definition-list">
+        <dt>依頼元</dt><dd>${escapeHtml(system.requesterCompany)}</dd>
+        <dt>担当課</dt><dd>${escapeHtml(system.department)}</dd>
+        <dt>J-SOX対象</dt><dd>${system.isJSOX ? "はい" : "いいえ"}</dd>
+        <dt>稼働開始</dt><dd>${escapeHtml(system.startedAt)}</dd>
+        <dt>関連プロジェクト</dt><dd>${project ? renderProjectButton(project) : "なし"}</dd>
+        <dt>問い合わせ</dt><dd>${system.inquiryCount} 件</dd>
+        <dt>障害</dt><dd>${system.incidentCount} 件</dd>
+        <dt>小改修</dt><dd>${system.smallChangeCount} 件</dd>
+        <dt>監査対応</dt><dd>${system.auditTaskCount} 件</dd>
+        <dt>未対応課題</dt><dd>${system.openIssueCount} 件</dd>
+        <dt>属人化リスク</dt><dd>${escapeHtml(labels.riskLevel[system.dependencyRisk])}</dd>
+        <dt>後継者リスク</dt><dd>${escapeHtml(labels.riskLevel[system.successorRisk])}</dd>
+      </dl>
+      ${renderAiDisclosure(
+        "AI要約・示唆",
+        `<p class="section-note">${escapeHtml(aiOperationSummary(system))}</p>
+        <div class="axis-grid section">
+          <div class="axis-card"><h4>要注意シグナル</h4><p>${attentionCount("operation", system.id)} 件</p></div>
+          <div class="axis-card"><h4>監査対応</h4><p>${system.auditTaskCount} 件</p></div>
+          <div class="axis-card"><h4>運用負荷</h4><p>${escapeHtml(labels.operationStatus[system.operationStatus])}</p></div>
+        </div>`,
+      )}
+    </section>
+    ${renderTabs("operation", [
+      ["history", "保守運用履歴", `
+        ${renderTimeline(histories, (history) => `${history.date} ${labels.operationHistoryType[history.type]} / ${history.title}`, (history) => `${history.memo} / ${history.createdBy}`)}
+        ${renderOperationHistoryForm(system)}
+      `],
+      ["signals", "関連シグナル", renderSignalTable(relatedSignals("operation", system.id))],
+    ])}
+  `;
+}
+
+function renderOperationHistoryForm(system) {
+  return `
+    <form id="operation-history-form" class="section">
+      <input type="hidden" name="operationSystemId" value="${escapeAttr(system.id)}">
+      <div class="form-grid">
+        <div class="field"><label>日付</label><input name="date" type="date" value="${TODAY_ISO}"></div>
+        <div class="field"><label>種別</label><select name="type">${renderEnumOptions(labels.operationHistoryType, "memo")}</select></div>
+        <div class="field"><label>記入者</label><input name="createdBy" value="運用担当"></div>
+        <div class="field"><label>タイトル</label><input name="title" required placeholder="例：J-SOX証跡提出依頼"></div>
+        <div class="field full"><label>メモ</label><textarea name="memo" required placeholder="保守メモ、問い合わせ、障害、小改修、監査対応を短く記録"></textarea></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" type="submit">保守運用記録を追加</button>
+      </div>
+    </form>
+  `;
+}
+
+function renderAttentionSignals() {
   const signals = filteredSignals();
   return `
     ${renderPageHeader(
-      "SIGNALS",
-      "シグナル一覧",
-      "現場からの軽い入力や既存データから拾った違和感を、要注意判定と関連案件付きで確認します。",
-      `<button class="btn primary" data-view="signal-form">シグナル登録</button>`,
+      "ATTENTION SIGNALS",
+      "要注意シグナル一覧",
+      "相談～見積、プロジェクト、保守・運用を横断して、上位層が注意すべき兆候を確認します。",
+      `<button class="btn primary" data-view="signal-form">シグナルを追加</button>`,
     )}
     ${renderSignalFilters()}
     ${renderTable(
-      ["ID", "タイトル / 内容", "部門", "入力元", "カテゴリ", "深刻度", "頻度", "関連案件", "要注意", "スコア", "状態", "作成日"],
+      ["シグナルID", "タイトル", "発生フェーズ", "関連対象", "部門", "カテゴリ", "スコア", "要注意理由", "推奨報告先", "状態", "作成日", "アクション"],
       signals.map((signal) => [
         escapeHtml(signal.signalCode),
-        `<span class="cell-main">${escapeHtml(signal.title)}</span><div class="cell-sub">${escapeHtml(signal.description)}</div>`,
+        escapeHtml(signal.title),
+        badge(labels.phase[signal.phase], "info"),
+        renderRelatedObjectButton(signal),
         escapeHtml(signal.department),
-        badge(labels.signalSource[signal.source], "source"),
-        badge(labels.signalCategory[signal.category], "info"),
-        badge(labels.severity[signal.severity], signal.severity === "high" ? "high" : signal.severity === "medium" ? "medium" : "low"),
-        escapeHtml(labels.frequency[signal.frequency]),
-        renderRelatedCaseButton(signal.relatedCaseId),
-        signal.isAttentionSignal ? badge("要注意", "high") : badge("通常", "neutral"),
+        badge(labels.signalCategory[signal.category], "neutral"),
         renderScore(signal.riskScore),
+        escapeHtml(signal.attentionReason || ""),
+        escapeHtml(labels.reportTo[signal.recommendedReportTo]),
         badge(labels.signalStatus[signal.status], signal.status === "attention" ? "high" : "neutral"),
         escapeHtml(signal.createdAt),
+        `<div class="stack">
+          <button class="btn" data-action="signal-watch" data-signal-id="${escapeAttr(signal.id)}">ウォッチ継続</button>
+          <button class="btn warning" data-action="signal-division" data-signal-id="${escapeAttr(signal.id)}">本部長共有</button>
+          <button class="btn warning" data-action="signal-executive" data-signal-id="${escapeAttr(signal.id)}">幹部会候補</button>
+          <button class="btn danger" data-action="signal-close" data-signal-id="${escapeAttr(signal.id)}">クローズ</button>
+        </div>`,
       ]),
+      "portfolio-table",
     )}
   `;
 }
 
 function renderSignalFilters() {
-  const deptOptions = ["all", ...unique(state.signals.map((signal) => signal.department))];
-  const categoryOptions = ["all", ...Object.keys(labels.signalCategory)];
-  const sourceOptions = ["all", ...Object.keys(labels.signalSource)];
   return `
     <div class="filter-bar">
-      ${signalFilterSelect("attentionOnly", "要注意", [["all", "すべて"], ["yes", "要注意のみ"]])}
-      ${signalFilterSelect("department", "部門", deptOptions.map((value) => [value, value === "all" ? "すべて" : value]))}
-      ${signalFilterSelect("category", "カテゴリ", categoryOptions.map((value) => [value, value === "all" ? "すべて" : labels.signalCategory[value]]))}
-      ${signalFilterSelect("source", "入力元", sourceOptions.map((value) => [value, value === "all" ? "すべて" : labels.signalSource[value]]))}
-      ${signalFilterSelect("relatedOnly", "関連案件", [["all", "すべて"], ["yes", "あり"]])}
-      ${signalFilterSelect("highScore", "高スコア", [["all", "すべて"], ["yes", "70以上"]])}
-      ${signalFilterSelect("openOnly", "未対応", [["all", "すべて"], ["yes", "未対応"]])}
-      <button class="btn" data-reset-signal-filters>フィルタ解除</button>
+      ${filterSelect("signal", "phase", "発生フェーズ", [["all", "すべて"], ...Object.entries(labels.phase)])}
+      ${filterSelect("signal", "department", "部門", [["all", "すべて"], ...unique(state.signals.map((item) => item.department)).map((value) => [value, value])])}
+      ${filterSelect("signal", "category", "カテゴリ", [["all", "すべて"], ...Object.entries(labels.signalCategory)])}
+      ${filterSelect("signal", "attentionOnly", "要注意", [["all", "すべて"], ["yes", "要注意のみ"]])}
+      ${filterSelect("signal", "reportTo", "報告先", [["all", "すべて"], ["division", "本部長"], ["executive", "幹部会"]])}
+      ${filterSelect("signal", "status", "状態", [["all", "すべて"], ...Object.entries(labels.signalStatus)])}
+      <button class="btn" data-action="reset-filters" data-filter-group="signal">フィルタ解除</button>
     </div>
   `;
 }
 
-function signalFilterSelect(key, label, options) {
-  return `
-    <label class="filter-field">
-      <span>${escapeHtml(label)}</span>
-      <select data-signal-filter="${escapeAttr(key)}">
-        ${options.map(([value, text]) => `<option value="${escapeAttr(value)}" ${state.signalFilters[key] === value ? "selected" : ""}>${escapeHtml(text)}</option>`).join("")}
-      </select>
-    </label>
-  `;
-}
-
 function renderSignalForm() {
+  const selectedTarget = defaultSignalTarget();
   return `
     ${renderPageHeader(
       "SIGNAL INPUT",
-      "シグナル登録画面",
-      "現場が小さな違和感を軽く入力し、疑似AIがカテゴリ、リスクスコア、要注意候補、関連案件候補を補完します。",
+      "シグナル登録",
+      "正式な課題でなくてよい小さな違和感を、フェーズと関連対象に紐づけて軽く登録します。",
     )}
     <section class="section split">
       <div class="panel">
         <h3>軽いシグナル入力</h3>
         <form id="signal-form" class="section">
           <div class="form-grid">
-            <div class="field">
-              <label for="title">タイトル</label>
-              <input id="title" name="title" required placeholder="例：A社案件で追加見積の合意が取れていない" />
-            </div>
-            <div class="field">
-              <label for="department">部門</label>
-              <select id="department" name="department" required>${renderOptions(departments, "第1開発部")}</select>
-            </div>
-            <div class="field full">
-              <label for="description">気になること</label>
-              <textarea id="description" name="description" required placeholder="正式な課題でなくて構いません。小さな違和感、増えていること、気になる反応などを書いてください。"></textarea>
-            </div>
-            <div class="field">
-              <label for="relatedCaseId">関連案件</label>
-              <select id="relatedCaseId" name="relatedCaseId">
-                <option value="">なし / AIに任せる</option>
-                ${state.cases.map((item) => `<option value="${escapeAttr(item.id)}">${escapeHtml(item.caseName)}</option>`).join("")}
-              </select>
-            </div>
-            <div class="field">
-              <label for="relatedText">関連案件または顧客</label>
-              <input id="relatedText" name="relatedText" placeholder="例：A社 / 予算策定" />
-            </div>
-            <div class="field">
-              <label for="category">カテゴリ</label>
-              <select id="category" name="category">
-                <option value="">AIに任せる</option>
-                ${Object.entries(labels.signalCategory).map(([value, text]) => `<option value="${escapeAttr(value)}">${escapeHtml(text)}</option>`).join("")}
-              </select>
-            </div>
-            <div class="field">
-              <label for="severity">深刻度</label>
-              <select id="severity" name="severity" required>${renderEnumOptions(labels.severity, "medium")}</select>
-            </div>
-            <div class="field">
-              <label for="frequency">発生頻度</label>
-              <select id="frequency" name="frequency" required>${renderEnumOptions(labels.frequency, "sometimes")}</select>
-            </div>
-            <div class="field full">
-              <label for="comment">コメント</label>
-              <input id="comment" name="comment" placeholder="補足、見てほしい観点など" />
-            </div>
+            <div class="field"><label>発生フェーズ</label><select name="phase">${renderEnumOptions(labels.phase, selectedTarget.phase)}</select></div>
+            <div class="field"><label>関連対象ID</label><input name="relatedId" value="${escapeAttr(selectedTarget.relatedId)}" placeholder="REQ-001 / EST-001 / PRJ-001 / OPS-001"></div>
+            <div class="field"><label>部門</label><select name="department">${renderOptions(departments, selectedTarget.department)}</select></div>
+            <div class="field"><label>カテゴリ</label><select name="category"><option value="">疑似AIに任せる</option>${Object.entries(labels.signalCategory).map(([value, text]) => `<option value="${escapeAttr(value)}">${escapeHtml(text)}</option>`).join("")}</select></div>
+            <div class="field full"><label>タイトル</label><input name="title" required placeholder="例：追加見積の合意が取れていない"></div>
+            <div class="field full"><label>気になること</label><textarea name="description" required placeholder="小さな違和感、増えていること、気になる反応などを短く記録"></textarea></div>
+            <div class="field"><label>深刻度</label><select name="severity">${renderEnumOptions(labels.severity, "medium")}</select></div>
+            <div class="field"><label>発生頻度</label><select name="frequency">${renderEnumOptions(labels.frequency, "sometimes")}</select></div>
+            <div class="field full"><label><input type="checkbox" name="forceAttention"> 要注意シグナルとして登録する</label></div>
           </div>
-          <div class="actions">
-            <button class="btn primary" type="submit">登録して疑似AI処理</button>
-            <button class="btn" type="button" data-view="signals">一覧を見る</button>
-          </div>
+          <div class="actions"><button class="btn primary" type="submit">登録して疑似AI処理</button></div>
         </form>
       </div>
-      <div>${state.aiResult ? renderSignalAiResult(state.aiResult) : renderSignalAiPlaceholder()}</div>
-    </section>
-  `;
-}
-
-function renderSignalAiPlaceholder() {
-  return `
-    <div class="ai-result">
-      <h3>登録後の疑似AI結果</h3>
-      <dl class="definition-list">
-        <dt>AI要約</dt><dd>入力文を短く整形します。</dd>
-        <dt>推定カテゴリ</dt><dd>キーワードから採算、納期、要員、承認などを推定します。</dd>
-        <dt>リスクスコア</dt><dd>深刻度、頻度、カテゴリ、リスク語、関連案件有無から算出します。</dd>
-        <dt>要注意候補</dt><dd>スコア70以上または重要条件に該当するものを候補にします。</dd>
-        <dt>関連案件候補</dt><dd>案件名、顧客名、カテゴリから候補を提示します。</dd>
-      </dl>
-    </div>
-  `;
-}
-
-function renderSignalAiResult(result) {
-  return `
-    <div class="ai-result">
-      <h3>疑似AI処理結果</h3>
-      <dl class="definition-list">
-        <dt>シグナルID</dt><dd>${escapeHtml(result.signalId)}</dd>
-        <dt>AI要約</dt><dd>${escapeHtml(result.summary)}</dd>
-        <dt>推定カテゴリ</dt><dd>${badge(labels.signalCategory[result.category], "info")}</dd>
-        <dt>リスクスコア</dt><dd>${renderScore(result.riskScore)}</dd>
-        <dt>判定</dt><dd>${badge(result.decision, result.riskScore >= 85 ? "critical" : result.riskScore >= 70 ? "high" : result.riskScore >= 40 ? "medium" : "low")}</dd>
-        <dt>要注意候補</dt><dd>${result.isAttentionCandidate ? badge("候補", "high") : badge("通常", "neutral")}</dd>
-        <dt>要注意理由</dt><dd>${escapeHtml(result.attentionReason)}</dd>
-        <dt>関連案件候補</dt>
-        <dd>${result.relatedCaseCandidates.length ? result.relatedCaseCandidates.map((item) => `<span class="pill">${escapeHtml(item.caseName)}</span>`).join(" ") : "候補なし"}</dd>
-        <dt>推奨対応</dt><dd>${escapeHtml(result.recommendedAction)}</dd>
-      </dl>
-      <div class="actions">
-        <button class="btn" data-view="attention-signals">要注意シグナル一覧へ</button>
-        <button class="btn" data-view="signals">シグナル一覧へ</button>
-      </div>
-    </div>
-  `;
-}
-
-function renderAttentionSignals() {
-  const signals = attentionSignals();
-  return `
-    ${renderPageHeader(
-      "ATTENTION SIGNALS",
-      "要注意シグナル一覧",
-      "幹部・本部長・管理職がウォッチすべき重要な兆候だけを確認し、報告・案件化・クローズを判断します。",
-      `<button class="btn primary" data-view="case-demo">案件化デモ</button>`,
-    )}
-    ${renderTable(
-      ["要注意シグナル名", "関連案件", "部門", "カテゴリ", "スコア", "要注意理由", "推奨報告先", "状態", "作成日", "アクション"],
-      signals.map((signal) => [
-        escapeHtml(signal.title),
-        renderRelatedCaseButton(signal.relatedCaseId),
-        escapeHtml(signal.department),
-        badge(labels.signalCategory[signal.category], "info"),
-        renderScore(signal.riskScore),
-        escapeHtml(signal.attentionReason || ""),
-        escapeHtml(recommendedSignalReport(signal)),
-        badge(labels.signalStatus[signal.status], signal.status === "attention" ? "high" : "medium"),
-        escapeHtml(signal.createdAt),
-        `<div class="stack">
-          <button class="btn" data-attention-action="watch" data-signal-id="${signal.id}">ウォッチ継続</button>
-          <button class="btn warning" data-attention-action="report-division" data-signal-id="${signal.id}">本部会議へ報告</button>
-          <button class="btn warning" data-attention-action="report-exec" data-signal-id="${signal.id}">幹部会へ報告</button>
-          <button class="btn primary" data-attention-action="convert" data-signal-id="${signal.id}">案件化する</button>
-          <button class="btn danger" data-attention-action="close" data-signal-id="${signal.id}">クローズ</button>
-        </div>`,
-      ]),
-    )}
-  `;
-}
-
-function renderWeeklyUpdate() {
-  const item = findCase(state.selectedWeeklyCaseId) || findCase(state.selectedCaseId) || state.cases[0];
-  return `
-    ${renderPageHeader(
-      "WEEKLY ONE-LINE UPDATE",
-      "週次一言更新画面",
-      "毎回すべてを入力させず、前回値をコピーし、変化がある項目だけを一言で更新するイメージです。",
-    )}
-    <section class="section split">
-      <div class="panel">
-        <h3>前回値コピー</h3>
-        <div class="update-copy section">
-          <div><span>対象案件</span><strong>${escapeHtml(item.caseName)}</strong></div>
-          <div><span>総合状態</span><strong>${escapeHtml(labels.overallStatus[item.status])}</strong></div>
-          <div><span>推移</span><strong>${escapeHtml(labels.trend[item.trend])}</strong></div>
-          <div><span>必要な支援</span><strong>${escapeHtml(labels.supportNeeded[item.supportNeeded])}</strong></div>
-          <div><span>前回コメント</span><strong>${escapeHtml(item.latestComment)}</strong></div>
-        </div>
-        <form id="weekly-update-form" class="section">
-          <div class="form-grid">
-            <div class="field full">
-              <label for="caseId">対象案件</label>
-              <select id="caseId" name="caseId" data-weekly-case>${state.cases.map((caseItem) => `<option value="${escapeAttr(caseItem.id)}" ${caseItem.id === item.id ? "selected" : ""}>${escapeHtml(caseItem.caseName)}</option>`).join("")}</select>
-            </div>
-            <div class="field">
-              <label for="overallStatus">総合状態</label>
-              <select id="overallStatus" name="overallStatus">${renderEnumOptions(labels.overallStatus, item.status)}</select>
-            </div>
-            <div class="field">
-              <label for="trend">前回からの変化</label>
-              <select id="trend" name="trend">${renderEnumOptions(labels.trend, item.trend)}</select>
-            </div>
-            <div class="field full">
-              <label for="comment">一言コメント</label>
-              <textarea id="comment" name="comment" required placeholder="例：追加見積の合意が遅れており、採算悪化のおそれがあります。">${escapeHtml(item.latestComment)}</textarea>
-            </div>
-            <div class="field">
-              <label for="supportNeeded">必要な支援</label>
-              <select id="supportNeeded" name="supportNeeded">${renderEnumOptions(labels.supportNeeded, item.supportNeeded)}</select>
-            </div>
-          </div>
-          <div class="actions">
-            <button class="btn primary" type="submit">週次更新して疑似AI処理</button>
-          </div>
-        </form>
-      </div>
-      <div>${state.weeklyAiResult ? renderWeeklyAiResult(state.weeklyAiResult) : renderWeeklyAiPlaceholder()}</div>
-    </section>
-  `;
-}
-
-function renderWeeklyAiPlaceholder() {
-  return `
-    <div class="ai-result">
-      <h3>週次更新後の疑似AI結果</h3>
-      <dl class="definition-list">
-        <dt>AI要約</dt><dd>一言コメントを短く整形します。</dd>
-        <dt>状態軸の変化</dt><dd>採算、納期、要員、期限、承認などへの影響を推定します。</dd>
-        <dt>要注意候補</dt><dd>悪化や危険状態から要注意シグナル候補を提示します。</dd>
-        <dt>推奨報告先</dt><dd>状態、推移、必要な支援から報告先を推定します。</dd>
-      </dl>
-    </div>
-  `;
-}
-
-function renderWeeklyAiResult(result) {
-  return `
-    <div class="ai-result">
-      <h3>疑似AI処理結果</h3>
-      <dl class="definition-list">
-        <dt>AI要約</dt><dd>${escapeHtml(result.summary)}</dd>
-        <dt>推定カテゴリ</dt><dd>${badge(labels.signalCategory[result.category], "info")}</dd>
-        <dt>状態軸の変化</dt><dd>${escapeHtml(result.axisMessage)}</dd>
-        <dt>要注意候補</dt><dd>${result.attentionCandidate ? badge(result.attentionTitle, "high") : badge("なし", "neutral")}</dd>
-        <dt>推奨報告先</dt><dd>${escapeHtml(labels.nextReportTo[result.reportTo])}</dd>
-        <dt>次に確認すべきこと</dt><dd>${escapeHtml(result.nextCheck)}</dd>
-      </dl>
-      <div class="actions">
-        <button class="btn" data-view="case-detail" data-case-id="${result.caseId}">案件詳細を見る</button>
-      </div>
-    </div>
-  `;
-}
-
-function renderCaseDemo() {
-  const signals = attentionSignals().filter((signal) => signal.status !== "converted_to_case");
-  const selected = findSignal(state.selectedSignalId) || signals[0] || attentionSignals()[0];
-  return `
-    ${renderPageHeader(
-      "CONVERT TO CASE",
-      "案件化デモ画面",
-      "要注意シグナルを選択し、必要なものだけ正式案件として責任者・期限・金額・報告先を持たせます。",
-    )}
-    <section class="section split">
-      <div class="panel">
-        <h3>要注意シグナルを選択</h3>
-        <div class="grid cols-2 section">
-          ${signals
-            .map((signal) => `
-              <div class="attention-card ${selected?.id === signal.id ? "active" : ""}">
-                <h4>${escapeHtml(signal.title)}</h4>
-                <p>${escapeHtml(signal.attentionReason || signal.description)}</p>
-                <div class="stack">${renderScore(signal.riskScore)}${badge(labels.signalCategory[signal.category], "info")}</div>
-                <button class="btn" data-select-signal="${signal.id}">この要注意シグナルを選択</button>
-              </div>
-            `)
-            .join("")}
-        </div>
-      </div>
-      <div class="panel">
-        <h3>正式案件として追加する項目</h3>
-        ${selected ? renderCaseConvertForm(selected) : `<div class="empty">案件化できる要注意シグナルがありません。</div>`}
+      <div class="ai-result">
+        <h3>疑似AIで行うこと</h3>
+        <dl class="definition-list">
+          <dt>分類</dt><dd>キーワードから採算、要員、見積、監査、属人化などを推定します。</dd>
+          <dt>リスクスコア</dt><dd>深刻度、頻度、カテゴリ、J-SOX、大規模、遅延などから算出します。</dd>
+          <dt>要注意判定</dt><dd>70点以上を要注意、85点以上を幹部確認候補として扱います。</dd>
+          <dt>報告先</dt><dd>スコアと内容から本部長確認候補または幹部会報告候補を推奨します。</dd>
+        </dl>
       </div>
     </section>
-  `;
-}
-
-function renderCaseConvertForm(signal) {
-  return `
-    <form id="case-convert-form" class="section">
-      <input type="hidden" name="signalId" value="${escapeAttr(signal.id)}" />
-      <div class="form-grid">
-        <div class="field full">
-          <label for="caseName">案件名</label>
-          <input id="caseName" name="caseName" required value="${escapeAttr(`${signal.title} 対応案件`)}" />
-        </div>
-        <div class="field">
-          <label for="caseType">案件タイプ</label>
-          <select id="caseType" name="caseType" required>${renderEnumOptions(labels.caseType, signal.category === "deadline" || signal.category === "approval" ? "routine" : "project")}</select>
-        </div>
-        <div class="field">
-          <label for="customerName">顧客名または提出先</label>
-          <input id="customerName" name="customerName" placeholder="例：A社 / 親会社" />
-        </div>
-        <div class="field">
-          <label for="owner">責任者</label>
-          <input id="owner" name="owner" required placeholder="例：本部長" />
-        </div>
-        <div class="field">
-          <label for="manager">主担当</label>
-          <input id="manager" name="manager" required placeholder="例：山田" />
-        </div>
-        <div class="field">
-          <label for="dueDate">期限または終了予定日</label>
-          <input id="dueDate" name="dueDate" required type="date" value="2026-09-30" />
-        </div>
-        <div class="field">
-          <label for="impact">影響額または金額規模</label>
-          <input id="impact" name="impact" required placeholder="例：1500万円 / 1.2億円" />
-        </div>
-        <div class="field">
-          <label for="submitTo">提出先</label>
-          <input id="submitTo" name="submitTo" placeholder="定型業務型の場合: 親会社など" />
-        </div>
-        <div class="field">
-          <label for="nextReportTo">次回報告先</label>
-          <select id="nextReportTo" name="nextReportTo" required>${renderEnumOptions(labels.nextReportTo, signal.riskScore >= 85 ? "executive_meeting" : "division_management_meeting")}</select>
-        </div>
-        <div class="field">
-          <label for="status">ステータス</label>
-          <select id="status" name="status" required>${renderEnumOptions(labels.overallStatus, signal.riskScore >= 85 ? "critical" : "attention")}</select>
-        </div>
-        <div class="field full">
-          <label for="policy">対応方針</label>
-          <textarea id="policy" name="policy" required>${escapeHtml(signal.attentionReason || signal.description)}</textarea>
-        </div>
-      </div>
-      <div class="actions">
-        <button class="btn primary" type="submit">案件化する</button>
-      </div>
-    </form>
   `;
 }
 
@@ -1978,9 +2440,9 @@ function renderAiQa() {
   const selected = state.selectedQuestion || sampleQuestions[0];
   return `
     ${renderPageHeader(
-      "AI QUESTION DEMO",
+      "AI QUESTION",
       "AI質問画面",
-      "自然文の質問を選ぶと、現在のダミーデータをもとにした疑似回答を表示します。",
+      "自然文の質問に対して、ダミーデータと疑似ロジックで回答する画面です。実AI APIは使っていません。",
     )}
     <section class="section split">
       <div class="panel">
@@ -1988,141 +2450,1127 @@ function renderAiQa() {
         <div class="question-list section">
           ${sampleQuestions.map((question) => `<button class="question-button ${question === selected ? "active" : ""}" data-question="${escapeAttr(question)}">${escapeHtml(question)}</button>`).join("")}
         </div>
+        <form id="ai-question-form" class="section">
+          <div class="field">
+            <label>自由質問</label>
+            <input name="question" value="${escapeAttr(selected)}">
+          </div>
+          <div class="actions"><button class="btn primary" type="submit">質問する</button></div>
+        </form>
       </div>
-      <div class="panel">
-        <h3>ダミー回答</h3>
-        <div class="section">${renderQaAnswer(selected)}</div>
+      <div class="ai-result">
+        <h3>回答</h3>
+        ${renderQaAnswer(selected)}
       </div>
     </section>
   `;
 }
 
 function renderQaAnswer(question) {
-  if (question.includes("危険状態のプロジェクト")) {
-    const items = projectCases().filter((item) => item.status === "critical");
-    return `<p>危険状態のプロジェクト型案件は ${items.length} 件です。採算・要員・顧客の複数軸が悪化している案件を優先確認します。</p>${renderCaseMiniTable(items)}`;
-  }
-  if (question.includes("二桁億円")) {
-    const items = projectCases().filter((item) => (projectDetail(item.id)?.contractAmount || 0) >= 1000000000 && item.trend === "worsening");
-    return `<p>二桁億円規模で悪化傾向の案件は ${items.length} 件です。幹部会への報告候補です。</p>${renderCaseMiniTable(items)}`;
-  }
   if (question.includes("要員不足")) {
-    const signals = attentionSignals().filter((signal) => signal.category === "staffing" || /要員|負荷|PM/.test(signal.description));
-    return `<p>要員不足に関係する要注意シグナルは ${signals.length} 件です。関連案件のPM兼務と主要工程の担当余力を確認してください。</p>${renderSignalMiniTable(signals)}`;
+    const requests = state.requests.filter((item) => item.expectedSkill.includes("J-SOX") || attentionSignals().some((signal) => signal.phase === "request" && signal.relatedId === item.id && signal.category === "staffing"));
+    return `<p>今後6か月で要員不足になりそうな相談は ${requests.length} 件です。必要スキルと兼務状況を確認してください。</p>${renderTable(["相談", "所管課", "想定スキル"], requests.map((item) => [renderRequestButton(item), escapeHtml(item.department), escapeHtml(item.expectedSkill)]))}`;
   }
-  if (question.includes("採算危険")) {
-    const items = projectCases().filter((item) => projectDetail(item.id)?.profitabilityStatus === "critical");
-    return `<p>採算危険になりそうな案件は ${items.length} 件です。追加見積、工数超過、契約前提変更が主な確認観点です。</p>${renderCaseMiniTable(items)}`;
+  if (question.includes("見積回数")) {
+    const rows = state.requests.map((request) => ({ request, count: relatedEstimates(request.id).length })).filter((item) => item.count >= 2);
+    return `<p>見積回数が多く現場負荷が高いものは ${rows.length} 件です。前提の未確定や指摘履歴を確認してください。</p>${renderTable(["相談", "見積数", "状態"], rows.map((item) => [renderRequestButton(item.request), String(item.count), escapeHtml(labels.requestStatus[item.request.status])]))}`;
   }
-  if (question.includes("前月から悪化")) {
-    const items = state.cases.filter((item) => item.trend === "worsening");
-    return `<p>前月から悪化した案件は ${items.length} 件です。注意から危険へ進む前に支援要否を確認します。</p>${renderCaseMiniTable(items.slice(0, 10))}`;
+  if (question.includes("根拠が弱い")) {
+    const rows = state.estimates.filter((item) => item.explanationQuality === "weak");
+    return `<p>根拠が弱い見積は ${rows.length} 件です。外部連携数、利用部門数、除外事項を補う必要があります。</p>${renderTable(["見積", "関連相談", "提出期限"], rows.map((item) => [renderEstimateButton(item), escapeHtml(requestTitle(item.requestId)), escapeHtml(item.dueDate)]))}`;
   }
-  if (question.includes("幹部会")) {
-    const items = reportCandidates().filter((item) => item.nextReportTo === "executive_meeting");
-    return `<p>幹部会に上げるべき案件候補は ${items.length} 件です。危険状態、二桁億円規模、経営判断・予算支援が必要な案件を優先します。</p>${renderCaseMiniTable(items)}`;
+  if (question.includes("採算悪化")) {
+    const rows = state.projects.filter((item) => item.profitabilityStatus === "critical" || item.trend === "worsening");
+    return `<p>採算悪化しそうなプロジェクトは ${rows.length} 件です。追加見積の合意、工数超過、契約前提変更が確認観点です。</p>${renderTable(["プロジェクト", "採算", "推移"], rows.map((item) => [renderProjectButton(item), renderStatusLevel(item.profitabilityStatus), renderTrend(item.trend)]))}`;
   }
-  if (question.includes("期限が危ない")) {
-    const items = routineCases().filter((item) => routineDetail(item.id)?.deadlineStatus === "critical" || item.status === "critical");
-    return `<p>期限が危ない定型業務型案件は ${items.length} 件です。親会社提出、未提出部門、期限超過タスクを確認してください。</p>${renderCaseMiniTable(items)}`;
+  if (question.includes("PM報告")) {
+    const rows = state.projects.filter((item) => item.overallStatus === "normal" && attentionCount("project", item.id) > 0);
+    return `<p>PM報告だけでは見落とす可能性がある案件は ${rows.length} 件です。現データでは正常案件に強い要注意シグナルはありません。</p>${renderTable(["プロジェクト", "状態", "要注意"], rows.map((item) => [renderProjectButton(item), renderOverallStatus(item.overallStatus), String(attentionCount("project", item.id))]))}`;
   }
-  if (question.includes("予算策定")) {
-    const item = state.cases.find((caseItem) => caseItem.caseName === "2027年度予算策定");
-    const detail = routineDetail(item.id);
-    return `<p>予算策定では「${escapeHtml(detail.currentStep)}」工程が遅れています。未提出部門数は ${detail.notSubmittedDepartmentCount}、期限超過タスクは ${detail.overdueTaskCount} です。</p>${renderCaseMiniTable([item])}`;
+  if (question.includes("部門")) {
+    return `<p>要注意シグナルが増えている部門は、件数順に以下です。</p>${renderBarList(countBy(attentionSignals(), (signal) => signal.department))}`;
   }
-  if (question.includes("承認待ち")) {
-    const items = routineCases().filter((item) => routineDetail(item.id)?.pendingApprovalCount > 0 || routineDetail(item.id)?.approvalStatus !== "normal");
-    return `<p>承認待ちで止まっている可能性がある案件は ${items.length} 件です。承認者と決裁期限を確認してください。</p>${renderCaseMiniTable(items.slice(0, 10))}`;
+  if (question.includes("保守運用負荷")) {
+    const rows = state.operationSystems.filter((item) => item.operationStatus === "high_load" || item.inquiryCount >= 30 || item.smallChangeCount >= 5);
+    return `<p>保守運用負荷が高いシステムは ${rows.length} 件です。問い合わせ、小改修、未対応課題の増加を確認してください。</p>${renderTable(["システム", "問い合わせ", "小改修", "未対応"], rows.map((item) => [renderOperationButton(item), String(item.inquiryCount), String(item.smallChangeCount), String(item.openIssueCount)]))}`;
   }
-  const counts = countBy(attentionSignals(), (signal) => signal.department);
-  return `<p>要注意シグナルが増えている部門は、${counts.slice(0, 3).map((item) => `${item.label} ${item.value}件`).join("、")} です。</p>${renderBarList(counts)}`;
-}
-
-function renderCaseMiniTable(items) {
-  return renderTable(
-    ["案件", "タイプ", "状態", "推移", "報告先"],
-    items.map((item) => [
-      renderCaseButton(item),
-      badge(labels.caseType[item.caseType], item.caseType === "project" ? "info" : "neutral"),
-      renderOverallStatus(item.status),
-      renderTrend(item.trend),
-      escapeHtml(labels.nextReportTo[item.nextReportTo]),
-    ]),
-  );
-}
-
-function renderSignalMiniTable(signals) {
-  return renderTable(
-    ["シグナル", "関連案件", "カテゴリ", "スコア"],
-    signals.map((signal) => [
-      escapeHtml(signal.title),
-      renderRelatedCaseButton(signal.relatedCaseId),
-      badge(labels.signalCategory[signal.category], "info"),
-      renderScore(signal.riskScore),
-    ]),
-  );
+  if (question.includes("J-SOX")) {
+    const rows = state.operationSystems.filter((item) => item.isJSOX && item.auditTaskCount >= 10);
+    return `<p>J-SOX監査対応が重いシステムは ${rows.length} 件です。証跡提出の集中と属人化リスクを確認してください。</p>${renderTable(["システム", "監査対応", "属人化"], rows.map((item) => [renderOperationButton(item), String(item.auditTaskCount), badge(labels.riskLevel[item.dependencyRisk], riskTone(item.dependencyRisk))]))}`;
+  }
+  const signals = attentionSignals().filter((item) => item.recommendedReportTo === "executive");
+  return `<p>幹部会に上げるべきものは ${signals.length} 件です。スコア85点以上、採算・監査・属人化・要員の複合リスクを優先します。</p>${renderSignalTable(signals)}`;
 }
 
 function renderComparison() {
   const rows = [
-    ["データ入力", "手入力中心", "手入力＋既存システム連携"],
-    ["AI機能", "疑似AI", "本物のAI分類・要約・類似検出"],
-    ["シグナル", "手入力", "勤怠、座席、会議資料、工数、気分登録から自動検知"],
-    ["要注意シグナル", "リスクスコアで疑似判定", "AIとルールで自動抽出"],
-    ["案件管理", "ダミーデータ中心", "実案件・実ステータスと連携"],
-    ["案件タイプ", "プロジェクト型・定型業務型を表現", "実業務テンプレートと連携"],
-    ["状態推移", "ダミー履歴", "月次・週次スナップショット"],
-    ["導入範囲", "1〜2部門", "全社"],
-    ["目的", "仕組みの理解", "全社の予兆管理・経営可視化"],
+    ["データ入力", "短いメモとダミーデータ", "既存システム、Excel、PowerPoint、Teams、SharePoint連携"],
+    ["AI機能", "疑似AI関数", "OpenAI / Azure OpenAI による分類、要約、類似見積検索"],
+    ["見積支援", "前提・除外事項・説明文のダミー提示", "過去見積DB、見積Excel、WBS標準との連携"],
+    ["プロジェクト把握", "週次更新とシグナルで把握", "資料、メール、工数、課題表から自動抽出"],
+    ["保守運用", "問い合わせ・障害・監査件数を手入力", "問い合わせ管理、障害管理、J-SOX証跡管理と連携"],
+    ["権限", "なし", "本部長、幹部、部課長、担当者で閲覧範囲を分離"],
   ];
-  const futureItems = [
-    "勤怠システムとの連携",
-    "座席管理システムとの連携",
-    "テレワーク・出社データとの連携",
-    "工数管理との連携",
-    "案件管理・原価管理との連携",
-    "会議資料、Excel、PowerPointからのAI抽出",
-    "Microsoft 365、Teams、SharePointとの連携",
-    "気分登録機能の追加",
-    "Azure OpenAIまたはOpenAI APIによる本物のAI分類",
-    "AIによる要注意シグナル自動抽出",
-    "AIによる幹部会向けサマリー生成",
+  const future = [
+    "見積Excelとの連携",
+    "過去見積DBとの連携",
+    "工数管理システムとの連携",
+    "プロジェクト課題表Excelとの連携",
+    "PowerPoint報告資料からのAI抽出",
+    "メール・Teamsからのシグナル抽出",
+    "保守運用問い合わせ管理との連携",
+    "障害管理システムとの連携",
+    "J-SOX監査証跡管理との連携",
     "Power BIとの連携",
-    "権限管理",
-    "個人情報・健康情報の取り扱いルール",
-    "人事評価には使わない明確な方針",
-    "本部長、人事、産業保健、経営層で閲覧範囲を分ける設計",
+    "Microsoft 365、SharePoint、Teamsとの連携",
+    "権限管理と個人情報・健康情報の取り扱いルール",
   ];
   return `
     ${renderPageHeader(
       "ROADMAP",
-      "初期版と最終形の比較",
-      "初期版はダミーデータと疑似AIで仕組みを理解し、本番化時に既存システム連携を広げる想定です。",
+      "初期版と本番化の違い",
+      "このプロトタイプはダミーデータと疑似AIで仕組みを説明し、本番化時に既存システム連携を広げる前提です。",
     )}
-    ${renderTable(["項目", "初期版", "最終形"], rows.map((row) => row.map(escapeHtml)), "compare-table")}
+    ${renderTable(["項目", "初期版", "本番化"], rows.map((row) => row.map(escapeHtml)), "compare-table")}
     <section class="section grid cols-2">
       <div class="panel">
-        <h3>本番化する場合の拡張ポイント</h3>
-        <ul class="safety-list">${futureItems.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+        <h3>将来拡張ポイント</h3>
+        <ul class="safety-list">${future.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
       </div>
       <div class="panel">
-        <h3>運用上の注意</h3>
+        <h3>注意事項</h3>
         <ul class="safety-list">
-          <li>このプロトタイプは従業員を監視するためのものではありません。</li>
-          <li>目的は監視ではなく早期支援です。</li>
-          <li>評価・査定には使いません。</li>
-          <li>個人情報・健康情報は本番化時に閲覧権限を厳格にします。</li>
-          <li>最初は個人単位ではなく、チーム・課単位の傾向把握を重視します。</li>
+          <li>目的は監視ではなく、業務フローの可視化と早期支援です。</li>
+          <li>入力はできるだけ軽くし、履歴が自然に蓄積される設計にします。</li>
+          <li>AIは現場を評価するためではなく、要約・分類・見積支援・予兆検知を支援するために使います。</li>
+          <li>本番化時は権限管理、個人情報、健康情報、監査情報の取り扱いを厳格に設計します。</li>
         </ul>
       </div>
     </section>
   `;
 }
 
+function renderProjectAiResult(result) {
+  return `
+    <div class="update-copy section">
+      <div><span>AI要約</span><strong>${escapeHtml(result.summary)}</strong></div>
+      <div><span>状態軸</span><strong>${escapeHtml(result.axisMessage)}</strong></div>
+      <div><span>要注意候補</span><strong>${escapeHtml(result.signalTitle)}</strong></div>
+      <div><span>推奨報告先</span><strong>${escapeHtml(labels.reportTo[result.reportTo])}</strong></div>
+      <div><span>次に確認</span><strong>${escapeHtml(result.nextCheck)}</strong></div>
+    </div>
+  `;
+}
+
+function renderSignalTable(signals) {
+  return renderTable(
+    ["タイトル", "フェーズ", "関連対象", "カテゴリ", "スコア"],
+    signals.map((signal) => [
+      escapeHtml(signal.title),
+      badge(labels.phase[signal.phase], "info"),
+      renderRelatedObjectButton(signal),
+      badge(labels.signalCategory[signal.category], "neutral"),
+      renderScore(signal.riskScore),
+    ]),
+  );
+}
+
+function renderTimeline(items, titleSelector, bodySelector) {
+  if (!items.length) return `<div class="empty">履歴はまだありません。</div>`;
+  return `
+    <div class="timeline section">
+      ${items
+        .map((item) => `
+          <div class="timeline-item">
+            <strong>${escapeHtml(titleSelector(item))}</strong>
+            <span>${escapeHtml(bodySelector(item))}</span>
+          </div>
+        `)
+        .join("")}
+    </div>
+  `;
+}
+
+function renderTabs(group, tabs) {
+  const active = tabs.some(([id]) => id === state.activeTabs[group]) ? state.activeTabs[group] : tabs[0]?.[0];
+  const activeContent = tabs.find(([id]) => id === active)?.[2] || "";
+  return `
+    <section class="section tab-shell">
+      <div class="tab-list" role="tablist">
+        ${tabs
+          .map(([id, label]) => `
+            <button class="tab-button ${id === active ? "active" : ""}" data-tab-group="${escapeAttr(group)}" data-tab="${escapeAttr(id)}" type="button">
+              ${escapeHtml(label)}
+            </button>
+          `)
+          .join("")}
+      </div>
+      <div class="tab-panel">
+        ${activeContent}
+      </div>
+    </section>
+  `;
+}
+
+function renderAiDisclosure(title, content) {
+  return `
+    <details class="ai-disclosure">
+      <summary>${escapeHtml(title)}を表示</summary>
+      <div class="ai-disclosure-body">
+        ${content}
+      </div>
+    </details>
+  `;
+}
+
+function renderProjectAxisBadges(project) {
+  return `
+    <div class="stack">
+      ${axisBadge("進捗", project.scheduleStatus)}
+      ${axisBadge("採算", project.profitabilityStatus)}
+      ${axisBadge("品質", project.qualityStatus)}
+      ${axisBadge("要員", project.staffingStatus)}
+      ${axisBadge("顧客", project.customerStatus)}
+    </div>
+  `;
+}
+
+function axisBadge(axis, level) {
+  return `<span class="axis-badge ${escapeAttr(level)}"><span>${escapeHtml(axis)}</span><strong>${escapeHtml(labels.statusLevel[level])}</strong></span>`;
+}
+
+function renderExecutiveDashboardControls() {
+  const dashboard = state.executiveDashboard;
+  const savedViews = dashboard.savedViews || [];
+  return `
+    <section class="executive-control-bar">
+      ${executiveSelect("currentView", "表示ビュー", [
+        ...Object.entries(executiveDashboardPresets).map(([id, preset]) => [id, preset.name]),
+        ...savedViews.map((view) => [view.id, `保存: ${view.name}`]),
+        ["custom", "カスタム"],
+      ], dashboard.currentView)}
+      ${executiveSelect("period", "対象期間", [
+        ["current", "今月"],
+        ["next3", "今後3か月"],
+        ["next6", "今後6か月"],
+        ["next12", "今後12か月"],
+        ["fiscalYear", "年度"],
+        ["custom", "任意期間"],
+      ], dashboard.filters.period)}
+      ${executiveSelect("organization", "対象組織", [
+        ["all", "全社"],
+        ["headquarters", "本部"],
+        ["division", "部"],
+        ["section", "課"],
+      ], dashboard.filters.organization)}
+      ${executiveSelect("amountScale", "金額規模", [
+        ["all", "すべて"],
+        ["under10m", "1,000万円未満"],
+        ["10mTo100m", "1,000万円〜1億円"],
+        ["100mTo1b", "1億円〜10億円"],
+        ["over1b", "10億円以上"],
+      ], dashboard.filters.amountScale)}
+      ${executiveSelect("status", "状態", [
+        ["all", "すべて"],
+        ["attention", "注意以上"],
+        ["critical", "危険のみ"],
+        ["worsening", "悪化傾向"],
+        ["decision", "経営判断待ち"],
+      ], dashboard.filters.status)}
+      ${executiveSelect("revenueConfidence", "売上確度", [
+        ["all", "すべて"],
+        ["confirmed", "確定のみ"],
+        ["confirmedHigh", "確定＋高確度"],
+        ["includePipeline", "見込みを含む"],
+      ], dashboard.filters.revenueConfidence)}
+      <button class="btn primary executive-control-button" data-action="toggle-dashboard-settings" type="button">表示設定</button>
+    </section>
+  `;
+}
+
+function executiveSelect(key, label, options, selected) {
+  return `
+    <label class="executive-filter">
+      <span>${escapeHtml(label)}</span>
+      <select data-executive-filter="${escapeAttr(key)}">
+        ${options.map(([value, text]) => `<option value="${escapeAttr(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(text)}</option>`).join("")}
+      </select>
+    </label>
+  `;
+}
+
+function renderExecutiveDashboardMessage() {
+  return `
+    <div class="message-band executive-message">
+      <strong>この経営ダッシュボードは、相談件数やプロジェクト件数を並べるためのものではありません。</strong><br>
+      今後の売上・業務量を予測し、正社員で対応できるかを確認し、不足分を外注・パートナーでどう補うかを判断し、
+      進行中プロジェクトの採算と重大障害への対応を追跡するための意思決定画面です。
+      相談・見積・プロジェクト・保守運用の情報を横断して使い、課や部の個別最適ではなく全社最適での判断を支援します。
+    </div>
+  `;
+}
+
+function renderExecutiveKpiCards(dashboard) {
+  return `
+    <section class="executive-kpi-grid">
+      ${executiveKpiCard({
+        title: "12か月予測売上",
+        value: formatOku(dashboard.revenue.total),
+        tone: dashboard.revenue.budgetGap < 0 ? "warning" : "good",
+        lines: [
+          `確定: ${formatOku(dashboard.revenue.confirmed)}`,
+          `高確度: ${formatOku(dashboard.revenue.highConfidence)}`,
+          `見込み: ${formatOku(dashboard.revenue.pipeline)}`,
+          `予算差: ${formatOkuSigned(dashboard.revenue.budgetGap)}`,
+        ],
+        targetView: "requests",
+      })}
+      ${executiveKpiCard({
+        title: "正社員不足",
+        value: `${dashboard.staffing.shortage}人月`,
+        tone: "danger",
+        lines: [
+          `必要: ${dashboard.staffing.required}人月`,
+          `供給: ${dashboard.staffing.supply}人月`,
+          `不足開始: ${dashboard.staffing.shortageStart}`,
+          `主な不足: ${dashboard.staffing.mainShortages.join("、")}`,
+        ],
+        targetView: "attention-signals",
+      })}
+      ${executiveKpiCard({
+        title: "必要外注",
+        value: `${dashboard.partner.required}人月`,
+        tone: dashboard.partner.unsecured > 0 ? "warning" : "good",
+        lines: [
+          `確保済み: ${dashboard.partner.secured}人月`,
+          `未確保: ${dashboard.partner.unsecured}人月`,
+          `外注費: ${formatOku(dashboard.partner.cost)}`,
+          `推奨: ${dashboard.partner.recommendedCount}社`,
+        ],
+        targetView: "projects",
+      })}
+      ${executiveKpiCard({
+        title: "採算危険プロジェクト",
+        value: `${dashboard.profitability.criticalCount}件`,
+        tone: "danger",
+        lines: [
+          `注意: ${dashboard.profitability.attentionCount}件`,
+          `危険契約額: ${formatOku(dashboard.profitability.criticalAmount)}`,
+          `想定損失: ${formatOku(dashboard.profitability.expectedLoss)}`,
+          `悪化: ${dashboard.profitability.worsenedCount}件`,
+        ],
+        targetView: "projects",
+      })}
+      ${executiveKpiCard({
+        title: "対応中重大障害",
+        value: `${dashboard.incidents.activeCount}件`,
+        tone: dashboard.incidents.overdueCount > 0 ? "danger" : "warning",
+        lines: [
+          `暫定復旧: ${dashboard.incidents.temporaryRecovered}件`,
+          `恒久対応中: ${dashboard.incidents.permanentAction}件`,
+          `期限超過: ${dashboard.incidents.overdueCount}件`,
+          `再発防止未完了: ${dashboard.incidents.recurrenceOpen}件`,
+        ],
+        targetView: "operations",
+      })}
+    </section>
+  `;
+}
+
+function executiveKpiCard({ title, value, tone, lines, targetView }) {
+  return `
+    <button class="executive-kpi-card ${escapeAttr(tone)}" data-view="${escapeAttr(targetView)}" type="button">
+      <span>${escapeHtml(title)}</span>
+      <strong>${escapeHtml(value)}</strong>
+      ${lines.map((line) => `<small>${escapeHtml(line)}</small>`).join("")}
+    </button>
+  `;
+}
+
+function renderExecutiveDashboardSections(dashboard) {
+  const visible = state.executiveDashboard.visibleItems;
+  const sections = [
+    visibleGroup("demand", visible) ? renderDemandDecisionSection(dashboard) : "",
+    visibleGroup("staffing", visible) ? renderStaffingDecisionSection(dashboard) : "",
+    visibleGroup("partner", visible) ? renderPartnerDecisionSection(dashboard) : "",
+    visibleGroup("profitability", visible) ? renderProfitabilityDecisionSection(dashboard) : "",
+    visibleGroup("incident", visible) ? renderIncidentDecisionSection(dashboard) : "",
+  ].filter(Boolean);
+  if (!sections.length) return `<div class="empty">表示設定で表示する情報を選択してください。</div>`;
+  return sections.join("");
+}
+
+function visibleGroup(group, visible) {
+  return Object.entries(executiveDashboardItems).some(([key, item]) => item.group === group && visible[key]);
+}
+
+function itemVisible(key) {
+  return Boolean(state.executiveDashboard.visibleItems[key]);
+}
+
+function renderDemandDecisionSection(dashboard) {
+  return `
+    <section class="section executive-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">1. DEMAND & SALES</p>
+          <h3>需要・売上見通し</h3>
+          <p class="section-note">今後12か月の売上と業務量を、確度別・月別に確認します。</p>
+        </div>
+        <button class="btn" data-view="requests" type="button">相談・見積へ</button>
+      </div>
+      <div class="grid cols-2">
+        ${itemVisible("revenueForecast") ? renderRevenueStackChart(dashboard.revenue.monthly) : ""}
+        ${itemVisible("monthlyWorkload") ? renderWorkloadChart(dashboard.workload.monthly) : ""}
+      </div>
+      ${itemVisible("budgetGap") || itemVisible("confidenceBreakdown") || itemVisible("largeDealCandidates") ? `
+        <div class="grid cols-3 section">
+          ${itemVisible("budgetGap") ? executiveMiniPanel("年度予算との差", formatOkuSigned(dashboard.revenue.budgetGap), "予算44.9億円に対する差分", "warning") : ""}
+          ${itemVisible("confidenceBreakdown") ? executiveMiniPanel("受注確度別内訳", `確定${formatOku(dashboard.revenue.confirmed)}`, `高確度${formatOku(dashboard.revenue.highConfidence)} / 見込み${formatOku(dashboard.revenue.pipeline)}`, "good") : ""}
+          ${itemVisible("largeDealCandidates") ? executiveMiniPanel("大型案件候補", "3件", "A社更改、B社刷新、C社移行", "neutral") : ""}
+        </div>
+      ` : ""}
+    </section>
+  `;
+}
+
+function renderStaffingDecisionSection(dashboard) {
+  return `
+    <section class="section executive-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">2. EMPLOYEE STAFFING</p>
+          <h3>正社員要員</h3>
+          <p class="section-note">時期・スキル・部門単位で、正社員供給だけで足りるかを確認します。</p>
+        </div>
+        <button class="btn" data-view="attention-signals" type="button">要員シグナルへ</button>
+      </div>
+      <div class="grid cols-2">
+        ${itemVisible("monthlyStaffingGap") ? renderStaffingGapChart(dashboard.staffing.monthly) : ""}
+        ${itemVisible("skillShortage") ? renderSkillShortageTable(dashboard.staffing.skills) : ""}
+      </div>
+      ${itemVisible("departmentLoad") || itemVisible("pmMultiAssign") || itemVisible("substituteShortage") ? `
+        <div class="grid cols-3 section">
+          ${itemVisible("departmentLoad") ? executiveMiniPanel("部門別負荷", "第1開発課が高負荷", "PM・SAP領域に集中", "warning") : ""}
+          ${itemVisible("pmMultiAssign") ? executiveMiniPanel("PM兼務状況", "4件", "複数案件兼務のPMが増加", "warning") : ""}
+          ${itemVisible("substituteShortage") ? executiveMiniPanel("代替要員不足", "SAP / セキュリティ", "3か月以内に不足", "danger") : ""}
+        </div>
+      ` : ""}
+    </section>
+  `;
+}
+
+function renderPartnerDecisionSection(dashboard) {
+  return `
+    <section class="section executive-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">3. PARTNER OPTIMIZATION</p>
+          <h3>外注・パートナー最適化</h3>
+          <p class="section-note">正社員不足分を、どのパートナーで補うのが全社最適かを確認します。</p>
+        </div>
+        <button class="btn" data-view="projects" type="button">対象案件へ</button>
+      </div>
+      <div class="grid cols-2">
+        ${itemVisible("outsourcingNeed") ? renderOutsourceNeedPanel(dashboard.partner) : ""}
+        ${itemVisible("partnerRecommendation") ? renderPartnerRecommendationTable(dashboard.partner.recommendations) : ""}
+      </div>
+      ${itemVisible("partnerCapacity") || itemVisible("outsourcingCost") || itemVisible("partnerConcentration") ? `
+        <div class="grid cols-3 section">
+          ${itemVisible("partnerCapacity") ? executiveMiniPanel("パートナー別供給余力", "A社 12人月", "B社 6人月 / C社 4人月", "good") : ""}
+          ${itemVisible("outsourcingCost") ? executiveMiniPanel("外注費予測", formatOku(dashboard.partner.cost), "未確保分を含む見込み", "warning") : ""}
+          ${itemVisible("partnerConcentration") ? executiveMiniPanel("集中リスク", "1社が高依存", "特定SAP要員に依存", "danger") : ""}
+        </div>
+      ` : ""}
+    </section>
+  `;
+}
+
+function renderProfitabilityDecisionSection(dashboard) {
+  return `
+    <section class="section executive-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">4. PROFITABILITY HEALTH</p>
+          <h3>プロジェクト採算・健全性</h3>
+          <p class="section-note">採算危険、悪化傾向、PM報告とのずれを経営観点で確認します。</p>
+        </div>
+        <button class="btn" data-view="projects" type="button">プロジェクトへ</button>
+      </div>
+      <div class="grid cols-2">
+        ${itemVisible("profitRiskProjects") ? renderProfitabilitySummary(dashboard.profitability) : ""}
+        ${itemVisible("worseningProjects") ? renderProfitabilityRanking(dashboard.profitability.ranking) : ""}
+      </div>
+      ${itemVisible("effortOverrun") || itemVisible("additionalEstimatePending") || itemVisible("pmReportGap") ? `
+        <div class="grid cols-3 section">
+          ${itemVisible("effortOverrun") ? executiveMiniPanel("工数超過案件", "5件", "工数消化率が進捗率を超過", "warning") : ""}
+          ${itemVisible("additionalEstimatePending") ? executiveMiniPanel("追加見積未合意", "3件", "顧客承認待ち", "danger") : ""}
+          ${itemVisible("pmReportGap") ? executiveMiniPanel("PM報告とのずれ", `${dashboard.profitability.pmReportGap}件`, "自己評価よりデータ判定が悪い", "danger") : ""}
+        </div>
+      ` : ""}
+    </section>
+  `;
+}
+
+function renderIncidentDecisionSection(dashboard) {
+  return `
+    <section class="section executive-section">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">5. MAJOR INCIDENTS</p>
+          <h3>重大障害・重要トラブル対応</h3>
+          <p class="section-note">経営影響の大きい障害に絞り、期限と再発防止の進捗を確認します。</p>
+        </div>
+        <button class="btn" data-view="operations" type="button">保守・運用へ</button>
+      </div>
+      <div class="grid cols-2">
+        ${itemVisible("majorIncidents") ? renderIncidentStagePanel(dashboard.incidents) : ""}
+        ${itemVisible("overdueIncidentActions") ? renderIncidentTable(dashboard.incidents.items) : ""}
+      </div>
+      ${itemVisible("temporaryRecoveryOnly") || itemVisible("recurrencePreventionOpen") || itemVisible("jsoxIncidents") ? `
+        <div class="grid cols-3 section">
+          ${itemVisible("temporaryRecoveryOnly") ? executiveMiniPanel("暫定復旧のみ", `${dashboard.incidents.temporaryRecovered}件`, "恒久対応の期限確認が必要", "warning") : ""}
+          ${itemVisible("recurrencePreventionOpen") ? executiveMiniPanel("再発防止未完了", `${dashboard.incidents.recurrenceOpen}件`, "再発防止期限を確認", "danger") : ""}
+          ${itemVisible("jsoxIncidents") ? executiveMiniPanel("J-SOX影響障害", "1件", "統制影響の説明が必要", "danger") : ""}
+        </div>
+      ` : ""}
+    </section>
+  `;
+}
+
+function executiveMiniPanel(title, value, note, tone = "neutral") {
+  return `
+    <div class="executive-mini-panel ${escapeAttr(tone)}">
+      <span>${escapeHtml(title)}</span>
+      <strong>${escapeHtml(value)}</strong>
+      <small>${escapeHtml(note)}</small>
+    </div>
+  `;
+}
+
+function renderRevenueStackChart(months) {
+  const max = Math.max(...months.map((month) => month.confirmed + month.highConfidence + month.pipeline), 1);
+  const scopeLabel = months.length === 1 ? "今月" : `${months.length}か月`;
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>${escapeHtml(scopeLabel)}売上予測</h4>
+        <span class="pill">確定 / 高確度 / 見込み</span>
+      </div>
+      <div class="stack-chart">
+        ${months.map((month) => {
+          const total = month.confirmed + month.highConfidence + month.pipeline;
+          return `
+            <div class="stack-month">
+              <div class="stack-bar" title="${escapeAttr(`${month.label}: ${formatOku(total)}`)}">
+                <span class="stack-segment confirmed" style="height:${(month.confirmed / max) * 100}%"></span>
+                <span class="stack-segment high-confidence" style="height:${(month.highConfidence / max) * 100}%"></span>
+                <span class="stack-segment pipeline" style="height:${(month.pipeline / max) * 100}%"></span>
+              </div>
+              <strong>${escapeHtml(formatOku(total))}</strong>
+              <span>${escapeHtml(month.shortLabel)}</span>
+            </div>
+          `;
+        }).join("")}
+      </div>
+      <div class="chart-legend">
+        <span><i class="legend-dot confirmed"></i>確定</span>
+        <span><i class="legend-dot high-confidence"></i>高確度</span>
+        <span><i class="legend-dot pipeline"></i>見込み</span>
+        <span><i class="budget-line"></i>年度予算線</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderWorkloadChart(months) {
+  const max = Math.max(...months.map((month) => month.total), 1);
+  const scopeLabel = months.length === 1 ? "今月" : `${months.length}か月`;
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>${escapeHtml(scopeLabel)}業務量予測</h4>
+        <span class="pill">必要人月</span>
+      </div>
+      <div class="line-bar-chart">
+        ${months.map((month) => `
+          <div class="line-bar-item">
+            <div class="line-bar-track"><span style="height:${(month.total / max) * 100}%"></span></div>
+            <strong>${escapeHtml(String(month.total))}</strong>
+            <span>${escapeHtml(month.shortLabel)}</span>
+          </div>
+        `).join("")}
+      </div>
+      <div class="chart-note">PM、アプリ開発、インフラ、セキュリティ、保守運用、監査対応を合算。</div>
+    </div>
+  `;
+}
+
+function renderStaffingGapChart(months) {
+  const max = Math.max(...months.map((month) => Math.max(month.required, month.supply, month.shortage)), 1);
+  const scopeLabel = months.length === 1 ? "今月" : `${months.length}か月`;
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>${escapeHtml(scopeLabel)}要員過不足</h4>
+        <span class="pill danger">不足開始 2026年10月</span>
+      </div>
+      <div class="staffing-chart">
+        ${months.map((month) => `
+          <div class="staffing-month">
+            <div class="staffing-bars">
+              <span class="required" style="height:${(month.required / max) * 100}%"></span>
+              <span class="supply" style="height:${(month.supply / max) * 100}%"></span>
+              <span class="shortage" style="height:${(Math.max(month.shortage, 0) / max) * 100}%"></span>
+            </div>
+            <strong>${escapeHtml(month.shortage > 0 ? `▲${month.shortage}` : `+${Math.abs(month.shortage)}`)}</strong>
+            <span>${escapeHtml(month.shortLabel)}</span>
+          </div>
+        `).join("")}
+      </div>
+      <div class="chart-legend">
+        <span><i class="legend-dot required"></i>必要</span>
+        <span><i class="legend-dot supply"></i>正社員供給</span>
+        <span><i class="legend-dot shortage"></i>不足</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderSkillShortageTable(rows) {
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>スキル別不足</h4>
+        <span class="pill">部門・スキル単位</span>
+      </div>
+      ${renderTable(
+        ["スキル", "必要人月", "正社員供給", "不足"],
+        rows.map((row) => [
+          escapeHtml(row.skill),
+          String(row.required),
+          String(row.supply),
+          shortageBadge(row.shortage),
+        ]),
+        "executive-compact-table",
+      )}
+    </div>
+  `;
+}
+
+function renderOutsourceNeedPanel(partner) {
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>外注必要人月</h4>
+        <span class="pill warning">未確保 ${escapeHtml(String(partner.unsecured))}人月</span>
+      </div>
+      <div class="executive-metrics-row">
+        ${executiveMiniPanel("必要量", `${partner.required}人月`, "正社員不足分", "warning")}
+        ${executiveMiniPanel("確保済み", `${partner.secured}人月`, "契約・調整済み", "good")}
+        ${executiveMiniPanel("外注費", formatOku(partner.cost), "12か月見込み", "neutral")}
+      </div>
+    </div>
+  `;
+}
+
+function renderPartnerRecommendationTable(rows) {
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>推奨パートナー</h4>
+        <span class="pill">疑似AI推奨</span>
+      </div>
+      ${renderTable(
+        ["対象", "不足", "推奨", "理由", "評価"],
+        rows.map((row) => [
+          escapeHtml(row.target),
+          escapeHtml(`${row.skill} ${row.shortage}人月`),
+          escapeHtml(row.partner),
+          escapeHtml(row.reason),
+          badge(row.score, row.score === "高" ? "low" : "medium"),
+        ]),
+        "executive-compact-table",
+      )}
+    </div>
+  `;
+}
+
+function renderProfitabilitySummary(data) {
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>採算状況</h4>
+        <span class="pill danger">危険 ${escapeHtml(String(data.criticalCount))}件</span>
+      </div>
+      <div class="profit-health-grid">
+        ${executiveMiniPanel("正常", `${data.normalCount}件`, "計画範囲内", "good")}
+        ${executiveMiniPanel("注意", `${data.attentionCount}件`, "早期支援候補", "warning")}
+        ${executiveMiniPanel("危険", `${data.criticalCount}件`, `契約額 ${formatOku(data.criticalAmount)}`, "danger")}
+        ${executiveMiniPanel("想定損失", formatOku(data.expectedLoss), "採算悪化見込み", "danger")}
+      </div>
+    </div>
+  `;
+}
+
+function renderProfitabilityRanking(rows) {
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>採算悪化ランキング</h4>
+        <span class="pill">粗利率差</span>
+      </div>
+      ${renderTable(
+        ["案件", "契約額", "計画", "見込", "差", "主因"],
+        rows.map((row) => [
+          `<button class="btn" data-view="projects">${escapeHtml(row.project)}</button>`,
+          escapeHtml(formatOku(row.amount)),
+          escapeHtml(`${row.planMargin}%`),
+          escapeHtml(`${row.forecastMargin}%`),
+          badge(`${row.gap}pt`, row.gap <= -5 ? "high" : "medium"),
+          escapeHtml(row.reason),
+        ]),
+        "executive-compact-table",
+      )}
+    </div>
+  `;
+}
+
+function renderIncidentStagePanel(data) {
+  const stages = ["検知", "影響確認", "暫定復旧", "原因特定", "恒久対応", "再発防止", "クローズ"];
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>重大障害対応ステージ</h4>
+        <span class="pill danger">対応中 ${escapeHtml(String(data.activeCount))}件</span>
+      </div>
+      <div class="incident-stage-flow">
+        ${stages.map((stage) => `<span class="${stage === "恒久対応" || stage === "再発防止" ? "active" : ""}">${escapeHtml(stage)}</span>`).join("")}
+      </div>
+      <div class="executive-metrics-row">
+        ${executiveMiniPanel("期限超過", `${data.overdueCount}件`, "経営確認候補", "danger")}
+        ${executiveMiniPanel("暫定復旧", `${data.temporaryRecovered}件`, "恒久対応待ち", "warning")}
+        ${executiveMiniPanel("再発防止未完了", `${data.recurrenceOpen}件`, "期限管理対象", "danger")}
+      </div>
+    </div>
+  `;
+}
+
+function renderIncidentTable(rows) {
+  return `
+    <div class="executive-panel">
+      <div class="panel-title-row">
+        <h4>障害対応一覧</h4>
+        <span class="pill">経営影響のみ</span>
+      </div>
+      ${renderTable(
+        ["障害", "影響", "現在状態", "責任者", "次アクション", "期限"],
+        rows.map((row) => [
+          escapeHtml(row.name),
+          escapeHtml(row.impact),
+          badge(row.stage, row.overdue ? "high" : "medium"),
+          escapeHtml(row.owner),
+          escapeHtml(row.nextAction),
+          escapeHtml(row.deadline),
+        ]),
+        "executive-compact-table",
+      )}
+    </div>
+  `;
+}
+
+function renderExecutiveSettingsPanel() {
+  return `
+    <aside class="executive-settings-panel">
+      <div class="panel-title-row">
+        <h3>表示する情報</h3>
+        <button class="btn" data-action="toggle-dashboard-settings" type="button">閉じる</button>
+      </div>
+      <div class="executive-settings-body">
+        ${executiveDashboardGroups.map(([group, label]) => `
+          <details open class="settings-group">
+            <summary>${escapeHtml(label)}</summary>
+            ${Object.entries(executiveDashboardItems)
+              .filter(([, item]) => item.group === group)
+              .map(([key, item]) => `
+                <label class="settings-check">
+                  <input type="checkbox" data-executive-item="${escapeAttr(key)}" ${itemVisible(key) ? "checked" : ""}>
+                  <span>${escapeHtml(item.label)}</span>
+                </label>
+              `)
+              .join("")}
+          </details>
+        `).join("")}
+      </div>
+      <div class="settings-actions">
+        <button class="btn primary" data-action="apply-dashboard-settings" type="button">適用</button>
+        <button class="btn" data-action="reset-dashboard-settings" type="button">初期状態に戻す</button>
+        <button class="btn warning" data-action="save-dashboard-view" type="button">この表示を保存</button>
+      </div>
+    </aside>
+  `;
+}
+
+function shortageBadge(value) {
+  if (value > 0) return badge(`▲${value}`, value >= 8 ? "high" : "medium");
+  return badge(`${Math.abs(value)}余力`, "low");
+}
+
+function buildExecutiveDecisionDashboard() {
+  const filters = state.executiveDashboard?.filters || defaultExecutiveDashboardState().filters;
+  const months = buildExecutiveMonths(TODAY_ISO, executivePeriodMonthCount(filters.period));
+  return {
+    months,
+    revenue: buildExecutiveRevenueData(months, filters),
+    workload: buildExecutiveWorkloadData(months),
+    staffing: buildExecutiveStaffingData(months),
+    partner: buildExecutivePartnerData(),
+    profitability: buildExecutiveProfitabilityData(filters),
+    incidents: buildExecutiveIncidentData(filters),
+  };
+}
+
+function executivePeriodMonthCount(period) {
+  if (period === "current") return 1;
+  if (period === "next3") return 3;
+  if (period === "next6") return 6;
+  return 12;
+}
+
+function buildExecutiveMonths(todayIso, count) {
+  const [year, month] = String(todayIso).split("-").map(Number);
+  const months = [];
+  for (let index = 0; index < count; index += 1) {
+    const absolute = monthIndex(year, month) + index;
+    const itemYear = Math.floor(absolute / 12);
+    const itemMonth = (absolute % 12) + 1;
+    months.push({
+      key: `${itemYear}-${String(itemMonth).padStart(2, "0")}`,
+      label: `${itemYear}年${itemMonth}月`,
+      shortLabel: `${itemMonth}月`,
+      year: itemYear,
+      month: itemMonth,
+      index,
+    });
+  }
+  return months;
+}
+
+function buildExecutiveRevenueData(months, filters = {}) {
+  const weights = [0.07, 0.08, 0.08, 0.09, 0.08, 0.09, 0.08, 0.09, 0.08, 0.08, 0.09, 0.09];
+  const confirmed = 31.0;
+  const highConfidence = filters.revenueConfidence === "confirmed" ? 0 : 7.5;
+  const pipeline = filters.revenueConfidence === "confirmed" || filters.revenueConfidence === "confirmedHigh" ? 0 : 4.3;
+  const budget = 44.9;
+  const total = confirmed + highConfidence + pipeline;
+  return {
+    confirmed,
+    highConfidence,
+    pipeline,
+    total,
+    budget,
+    budgetGap: total - budget,
+    previousForecastGap: -0.8,
+    monthly: months.map((month, index) => ({
+      ...month,
+      confirmed: roundOne(confirmed * weights[index]),
+      highConfidence: roundOne(highConfidence * weights[index]),
+      pipeline: roundOne(pipeline * weights[index]),
+      budget: roundOne(budget / 12),
+    })),
+  };
+}
+
+function buildExecutiveWorkloadData(months) {
+  const totals = [45, 48, 50, 55, 53, 56, 49, 52, 50, 51, 54, 57];
+  return {
+    monthly: months.map((month, index) => ({
+      ...month,
+      pm: Math.round(totals[index] * 0.14),
+      app: Math.round(totals[index] * 0.34),
+      infra: Math.round(totals[index] * 0.16),
+      security: Math.round(totals[index] * 0.09),
+      operation: Math.round(totals[index] * 0.2),
+      audit: Math.round(totals[index] * 0.07),
+      total: totals[index],
+    })),
+  };
+}
+
+function buildExecutiveStaffingData(months) {
+  const required = [45, 48, 50, 55, 53, 56, 49, 52, 50, 51, 54, 57];
+  const supply = [48, 48, 49, 48, 47, 46, 46, 46, 45, 44, 44, 43];
+  return {
+    required: 620,
+    supply: 552,
+    shortage: 68,
+    shortageStart: "2026年10月",
+    mainShortages: ["PM", "SAP", "セキュリティ"],
+    monthly: months.map((month, index) => ({
+      ...month,
+      required: required[index],
+      supply: supply[index],
+      shortage: Math.max(required[index] - supply[index], 0),
+      surplus: Math.max(supply[index] - required[index], 0),
+    })),
+    skills: [
+      { skill: "PM", required: 35, supply: 25, shortage: 10 },
+      { skill: "SAP", required: 40, supply: 28, shortage: 12 },
+      { skill: "インフラ", required: 32, supply: 30, shortage: 2 },
+      { skill: "セキュリティ", required: 18, supply: 10, shortage: 8 },
+      { skill: "保守運用", required: 45, supply: 48, shortage: -3 },
+    ],
+  };
+}
+
+function buildExecutivePartnerData() {
+  return {
+    required: 68,
+    secured: 42,
+    unsecured: 26,
+    cost: 1.4,
+    recommendedCount: 3,
+    recommendations: [
+      {
+        target: "A社基幹システム更改",
+        skill: "SAP",
+        shortage: 6,
+        partner: "パートナーA社",
+        reason: "類似案件・J-SOX経験あり、6人月確保可能",
+        score: "高",
+      },
+      {
+        target: "認証基盤刷新",
+        skill: "セキュリティ",
+        shortage: 4,
+        partner: "パートナーC社",
+        reason: "セキュリティ対応経験と品質評価が高い",
+        score: "高",
+      },
+      {
+        target: "B社インフラ刷新",
+        skill: "インフラ",
+        shortage: 3,
+        partner: "パートナーB社",
+        reason: "供給余力あり、単価は中位",
+        score: "中",
+      },
+    ],
+  };
+}
+
+function buildExecutiveProfitabilityData(filters = {}) {
+  const ranking = [
+    { project: "A社更改", amount: 8.5, planMargin: 15, forecastMargin: 4, gap: -11, reason: "追加工数", status: "critical", worsening: true, decision: true },
+    { project: "B社刷新", amount: 2.2, planMargin: 12, forecastMargin: 8, gap: -4, reason: "外注費増", status: "attention", worsening: true, decision: false },
+    { project: "C社移行", amount: 1.1, planMargin: 15, forecastMargin: 14, gap: -1, reason: "軽微", status: "attention", worsening: false, decision: false },
+  ].filter((row) => executiveStatusMatch(row, filters.status));
+
+  return {
+    normalCount: 31,
+    attentionCount: 11,
+    criticalCount: 6,
+    criticalAmount: 14.2,
+    expectedLoss: 1.1,
+    worsenedCount: 4,
+    pmReportGap: 4,
+    ranking,
+  };
+}
+
+function buildExecutiveIncidentData(filters = {}) {
+  const items = [
+    {
+      name: "生産管理停止",
+      impact: "工場操業",
+      stage: "恒久対応中",
+      owner: "IT本部長",
+      nextAction: "DB改修",
+      deadline: "7/20",
+      overdue: false,
+      status: "critical",
+      worsening: false,
+      decision: true,
+    },
+    {
+      name: "会計連携障害",
+      impact: "決算処理",
+      stage: "暫定復旧",
+      owner: "経理システム部長",
+      nextAction: "原因分析",
+      deadline: "7/18",
+      overdue: true,
+      status: "critical",
+      worsening: true,
+      decision: true,
+    },
+    {
+      name: "認証基盤障害",
+      impact: "グループ業務",
+      stage: "再発防止",
+      owner: "インフラ部長",
+      nextAction: "監視強化",
+      deadline: "7/25",
+      overdue: false,
+      status: "attention",
+      worsening: false,
+      decision: false,
+    },
+  ].filter((item) => executiveStatusMatch(item, filters.status));
+
+  return {
+    activeCount: 4,
+    temporaryRecovered: 2,
+    permanentAction: 2,
+    overdueCount: 1,
+    recurrenceOpen: 3,
+    items,
+  };
+}
+
+function executiveStatusMatch(item, status) {
+  if (!status || status === "all") return true;
+  if (status === "attention") return item.status === "attention" || item.status === "critical";
+  if (status === "critical") return item.status === "critical";
+  if (status === "worsening") return Boolean(item.worsening);
+  if (status === "decision") return Boolean(item.decision);
+  return true;
+}
+
+function roundOne(value) {
+  return Math.round(Number(value || 0) * 10) / 10;
+}
+
+function renderDashboardMatrix() {
+  const dashboard = buildDashboardMatrix();
+  return `
+    <section class="section dashboard-sheet">
+      <div class="dashboard-sheet-heading">
+        <h3>ダッシュボード</h3>
+        <span>金額単位：百万円</span>
+      </div>
+      <div class="dashboard-sheet-scroll">
+        <table class="dashboard-sheet-table">
+          <thead>
+            <tr>
+              <th class="sheet-corner"></th>
+              <th class="sheet-row-label"></th>
+              ${dashboard.months.map((month) => `<th colspan="4" class="sheet-month">${escapeHtml(month.label)}</th>`).join("")}
+              <th class="sheet-forecast">${escapeHtml(dashboard.forecastLabel)}</th>
+            </tr>
+            <tr>
+              <th class="sheet-corner"></th>
+              <th class="sheet-row-label"></th>
+              ${dashboard.months.map(() => ["売上", "件数", "社員", "外注"].map((label) => `<th>${escapeHtml(label)}</th>`).join("")).join("")}
+              <th>売上</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${dashboard.rows
+              .map((row) => `
+                <tr class="${escapeAttr(row.kind)}">
+                  <td class="sheet-gutter"></td>
+                  <th>${escapeHtml(row.label)}</th>
+                  ${row.months.map((metrics) => renderDashboardMetricCells(metrics)).join("")}
+                  <td class="forecast-cell">${formatDashboardNumber(row.forecastSales)}</td>
+                </tr>
+              `)
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+      <div class="dashboard-attention">
+        <div class="dashboard-attention-title">要注意</div>
+        <div class="dashboard-attention-grid">
+          ${dashboard.attention
+            .map((item) => `
+              <button class="dashboard-attention-item" data-view="${escapeAttr(item.view)}">
+                <span>${escapeHtml(item.label)}</span>
+                <strong>${escapeHtml(`${item.count}件`)}</strong>
+              </button>
+            `)
+            .join("")}
+        </div>
+      </div>
+    </section>
+  `;
+}
+
+function renderDashboardMetricCells(metrics) {
+  if (!metrics) return `<td></td><td></td><td></td><td></td>`;
+  return `
+    <td>${formatDashboardNumber(metrics.sales)}</td>
+    <td>${formatDashboardNumber(metrics.count)}</td>
+    <td>${formatDashboardNumber(metrics.employee)}</td>
+    <td>${formatDashboardNumber(metrics.vendor)}</td>
+  `;
+}
+
+function renderRevenueForecast(forecast) {
+  const maxTotal = Math.max(...forecast.periods.map((period) => period.total), 1);
+  const directionTone = forecast.direction === "increase" ? "good" : forecast.direction === "decrease" ? "danger" : "warning";
+  const directionLabel = forecast.direction === "increase" ? "増加見込み" : forecast.direction === "decrease" ? "減少見込み" : "横ばい";
+  const changeText = `${formatCurrency(Math.abs(forecast.changeAmount))} / ${formatPercent(Math.abs(forecast.changeRate))}`;
+
+  return `
+    <section class="section revenue-forecast">
+      <div class="section-header">
+        <div>
+          <p class="eyebrow">FUTURE SALES OUTLOOK</p>
+          <h3>当年から3年後までの半年別売上見通し</h3>
+          <p class="section-note">相談～見積、プロジェクト、保守・運用の売上を合計し、将来の売上が増えそうか減りそうかを最初に確認します。</p>
+        </div>
+        <div class="revenue-verdict ${escapeAttr(directionTone)}">
+          <span>総合判定</span>
+          <strong>${escapeHtml(directionLabel)}</strong>
+          <small>初回半期比 ${escapeHtml(changeText)}</small>
+        </div>
+      </div>
+      <div class="revenue-legend">
+        <span><i class="legend-dot consult"></i>相談～見積</span>
+        <span><i class="legend-dot project"></i>プロジェクト</span>
+        <span><i class="legend-dot operation"></i>保守・運用</span>
+      </div>
+      <div class="revenue-bars" aria-label="半年別売上見通し">
+        ${forecast.periods
+          .map((period) => `
+            <div class="revenue-period">
+              <div class="revenue-bar">
+                ${revenueSegment(period.consultEstimate, maxTotal, "consult", "相談～見積")}
+                ${revenueSegment(period.project, maxTotal, "project", "プロジェクト")}
+                ${revenueSegment(period.operation, maxTotal, "operation", "保守・運用")}
+              </div>
+              <div class="revenue-period-label">${escapeHtml(period.label)}</div>
+              <strong>${escapeHtml(formatCurrency(period.total))}</strong>
+            </div>
+          `)
+          .join("")}
+      </div>
+      ${renderTable(
+        ["半期", "相談～見積", "プロジェクト", "保守・運用", "合計", "前半期比"],
+        forecast.periods.map((period, index) => [
+          escapeHtml(period.label),
+          escapeHtml(formatCurrency(period.consultEstimate)),
+          escapeHtml(formatCurrency(period.project)),
+          escapeHtml(formatCurrency(period.operation)),
+          `<strong>${escapeHtml(formatCurrency(period.total))}</strong>`,
+          revenueTrendBadge(period.total, index === 0 ? null : forecast.periods[index - 1].total),
+        ]),
+        "revenue-table",
+      )}
+    </section>
+  `;
+}
+
+function revenueSegment(value, maxTotal, type, label) {
+  if (value <= 0) return "";
+  const height = Math.max((value / maxTotal) * 100, 4);
+  return `<span class="revenue-segment ${escapeAttr(type)}" style="height: ${height}%;" title="${escapeAttr(`${label}: ${formatCurrency(value)}`)}"></span>`;
+}
+
 function metricCard(label, value, sub, tone = "") {
   return `
-    <div class="metric-card ${tone}">
+    <div class="metric-card ${escapeAttr(tone)}">
       <div class="metric-label">${escapeHtml(label)}</div>
       <div class="metric-value">${escapeHtml(value)}</div>
       <div class="metric-sub">${escapeHtml(sub)}</div>
@@ -2147,48 +3595,33 @@ function renderBarList(items) {
   const max = Math.max(...items.map((item) => item.value), 1);
   return `
     <div class="bar-list">
-      ${items.map((item) => `
-        <div class="bar-row">
-          <div class="bar-label" title="${escapeAttr(item.label)}">${escapeHtml(item.label)}</div>
-          <div class="bar-track"><div class="bar-fill" style="width: ${(item.value / max) * 100}%"></div></div>
-          <div class="bar-value">${item.value}</div>
-        </div>
-      `).join("")}
+      ${items
+        .map((item) => `
+          <div class="bar-row">
+            <div class="bar-label" title="${escapeAttr(item.label)}">${escapeHtml(item.label)}</div>
+            <div class="bar-track"><div class="bar-fill" style="width: ${(item.value / max) * 100}%"></div></div>
+            <div class="bar-value">${item.value}</div>
+          </div>
+        `)
+        .join("")}
     </div>
   `;
 }
 
-function renderAxisBadges(item) {
-  if (item.caseType === "project") {
-    const detail = projectDetail(item.id);
-    return `
-      <div class="stack">
-        ${axisBadge("進捗", detail.scheduleStatus)}
-        ${axisBadge("採算", detail.profitabilityStatus)}
-        ${axisBadge("品質", detail.qualityStatus)}
-        ${axisBadge("要員", detail.staffingStatus)}
-        ${axisBadge("顧客", detail.customerStatus)}
-      </div>
-    `;
-  }
-  const detail = routineDetail(item.id);
+function filterSelect(group, key, label, options) {
+  const selected = state.filters[group][key];
   return `
-    <div class="stack">
-      ${axisBadge("期限", detail.deadlineStatus)}
-      ${axisBadge("工程", detail.processStatus)}
-      ${axisBadge("承認", detail.approvalStatus)}
-      ${axisBadge("回答", detail.responseStatus)}
-      ${axisBadge("品質", detail.qualityStatus)}
-    </div>
+    <label class="filter-field">
+      <span>${escapeHtml(label)}</span>
+      <select data-filter-group="${escapeAttr(group)}" data-filter="${escapeAttr(key)}">
+        ${options.map(([value, text]) => `<option value="${escapeAttr(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(text)}</option>`).join("")}
+      </select>
+    </label>
   `;
-}
-
-function axisBadge(axis, level) {
-  return `<span class="axis-badge ${level}"><span>${escapeHtml(axis)}</span><strong>${escapeHtml(labels.statusLevel[level])}</strong></span>`;
 }
 
 function renderOverallStatus(status) {
-  return badge(labels.overallStatus[status], status === "critical" ? "critical" : status === "attention" ? "medium" : "low");
+  return badge(labels.overallStatus[status], status === "critical" ? "critical" : status === "attention" ? "medium" : status === "completed" ? "neutral" : "low");
 }
 
 function renderStatusLevel(level) {
@@ -2204,200 +3637,364 @@ function renderScore(score) {
 }
 
 function badge(text, type = "neutral") {
-  return `<span class="badge ${type}">${escapeHtml(text)}</span>`;
+  return `<span class="badge ${escapeAttr(type)}">${escapeHtml(text)}</span>`;
 }
 
-function renderCaseButton(item) {
-  return `<button class="btn" data-view="case-detail" data-case-id="${escapeAttr(item.id)}">${escapeHtml(item.caseName)}</button>`;
+function renderRequestButton(item) {
+  return `<button class="btn" data-view="request-detail" data-request-id="${escapeAttr(item.id)}">${escapeHtml(item.title)}</button>`;
 }
 
-function renderRelatedCaseButton(caseId) {
-  const item = caseId ? findCase(caseId) : null;
-  if (!item) return badge("なし", "neutral");
-  return renderCaseButton(item);
+function renderEstimateButton(item) {
+  return `<button class="btn" data-view="estimate-detail" data-estimate-id="${escapeAttr(item.id)}">${escapeHtml(item.title)}</button>`;
 }
 
-function filteredCases() {
-  return state.cases.filter((item) => {
-    const detail = item.caseType === "project" ? projectDetail(item.id) : routineDetail(item.id);
-    if (state.filters.caseType !== "all" && item.caseType !== state.filters.caseType) return false;
-    if (state.filters.department !== "all" && item.department !== state.filters.department) return false;
-    if (state.filters.status !== "all" && item.status !== state.filters.status) return false;
-    if (state.filters.trend !== "all" && item.trend !== state.filters.trend) return false;
-    if (state.filters.attentionOnly === "yes" && item.attentionSignalCount <= 0) return false;
-    if (state.filters.reportTo !== "all" && item.nextReportTo !== state.filters.reportTo) return false;
-    if (state.filters.profitabilityCritical === "yes" && !(item.caseType === "project" && detail.profitabilityStatus === "critical")) return false;
-    if (state.filters.deadlineCritical === "yes" && !(item.caseType === "routine" && detail.deadlineStatus === "critical")) return false;
-    if (state.filters.amountScale === "large" && !(item.caseType === "project" && detail.contractAmount >= 1000000000)) return false;
-    if (state.filters.amountScale === "mid" && !(item.caseType === "project" && detail.contractAmount >= 100000000)) return false;
+function renderProjectButton(item) {
+  return `<button class="btn" data-view="project-detail" data-project-id="${escapeAttr(item.id)}">${escapeHtml(item.title)}</button>`;
+}
+
+function renderOperationButton(item) {
+  return `<button class="btn" data-view="operation-detail" data-operation-id="${escapeAttr(item.id)}">${escapeHtml(item.systemName)}</button>`;
+}
+
+function renderRelatedObjectButton(signal) {
+  if (signal.phase === "request") {
+    const item = findRequest(signal.relatedId);
+    return item ? renderRequestButton(item) : badge("なし", "neutral");
+  }
+  if (signal.phase === "estimate") {
+    const item = findEstimate(signal.relatedId);
+    return item ? renderEstimateButton(item) : badge("なし", "neutral");
+  }
+  if (signal.phase === "project") {
+    const item = findProject(signal.relatedId);
+    return item ? renderProjectButton(item) : badge("なし", "neutral");
+  }
+  const item = findOperation(signal.relatedId);
+  return item ? renderOperationButton(item) : badge("なし", "neutral");
+}
+
+function filteredRequests() {
+  const filter = state.filters.request;
+  return state.requests.filter((item) => {
+    if (filter.requesterCompany !== "all" && item.requesterCompany !== filter.requesterCompany) return false;
+    if (filter.department !== "all" && item.department !== filter.department) return false;
+    if (filter.background !== "all" && item.background !== filter.background) return false;
+    if (filter.status !== "all" && item.status !== filter.status) return false;
+    if (filter.budgetPlan !== "all" && item.budgetPlan !== filter.budgetPlan) return false;
+    if (filter.attentionOnly === "yes" && attentionCount("request", item.id) <= 0) return false;
+    return true;
+  });
+}
+
+function filteredEstimates() {
+  const filter = state.filters.estimate;
+  return state.estimates.filter((item) => {
+    if (filter.estimateType !== "all" && item.estimateType !== filter.estimateType) return false;
+    if (filter.status !== "all" && item.status !== filter.status) return false;
+    if (filter.explanationQuality !== "all" && item.explanationQuality !== filter.explanationQuality) return false;
+    if (filter.feedbackOnly === "yes" && item.feedbackCount <= 0) return false;
+    return true;
+  });
+}
+
+function filteredProjects() {
+  const filter = state.filters.project;
+  return state.projects.filter((item) => {
+    if (filter.department !== "all" && item.department !== filter.department) return false;
+    if (filter.overallStatus !== "all" && item.overallStatus !== filter.overallStatus) return false;
+    if (filter.trend !== "all" && item.trend !== filter.trend) return false;
+    if (filter.attentionOnly === "yes" && attentionCount("project", item.id) <= 0) return false;
+    if (filter.reportTo !== "all" && item.nextReportTo !== filter.reportTo) return false;
+    if (filter.amountScale === "large" && item.amount < 500000000) return false;
+    if (filter.amountScale === "mid" && item.amount < 100000000) return false;
+    return true;
+  });
+}
+
+function filteredOperations() {
+  const filter = state.filters.operation;
+  return state.operationSystems.filter((item) => {
+    if (filter.department !== "all" && item.department !== filter.department) return false;
+    if (filter.jsoxOnly === "yes" && !item.isJSOX) return false;
+    if (filter.status !== "all" && item.operationStatus !== filter.status) return false;
+    if (filter.dependencyRisk !== "all" && item.dependencyRisk !== filter.dependencyRisk) return false;
+    if (filter.attentionOnly === "yes" && attentionCount("operation", item.id) <= 0) return false;
     return true;
   });
 }
 
 function filteredSignals() {
-  return state.signals.filter((signal) => {
-    if (state.signalFilters.attentionOnly === "yes" && !signal.isAttentionSignal) return false;
-    if (state.signalFilters.department !== "all" && signal.department !== state.signalFilters.department) return false;
-    if (state.signalFilters.category !== "all" && signal.category !== state.signalFilters.category) return false;
-    if (state.signalFilters.source !== "all" && signal.source !== state.signalFilters.source) return false;
-    if (state.signalFilters.relatedOnly === "yes" && !signal.relatedCaseId) return false;
-    if (state.signalFilters.highScore === "yes" && signal.riskScore < 70) return false;
-    if (state.signalFilters.openOnly === "yes" && ["closed", "converted_to_case"].includes(signal.status)) return false;
+  const filter = state.filters.signal;
+  return state.signals.filter((item) => {
+    if (filter.phase !== "all" && item.phase !== filter.phase) return false;
+    if (filter.department !== "all" && item.department !== filter.department) return false;
+    if (filter.category !== "all" && item.category !== filter.category) return false;
+    if (filter.attentionOnly === "yes" && !item.isAttention) return false;
+    if (filter.reportTo !== "all" && item.recommendedReportTo !== filter.reportTo) return false;
+    if (filter.status !== "all" && item.status !== filter.status) return false;
     return true;
   });
 }
 
-function projectCases() {
-  return state.cases.filter((item) => item.caseType === "project");
-}
-
-function routineCases() {
-  return state.cases.filter((item) => item.caseType === "routine");
-}
-
 function attentionSignals() {
-  return state.signals.filter((signal) => signal.isAttentionSignal && signal.status !== "closed");
+  return state.signals.filter((item) => item.isAttention && item.status !== "closed");
 }
 
-function reportCandidates() {
-  return state.cases.filter((item) =>
-    item.nextReportTo !== "none" ||
-    item.status === "critical" ||
-    item.trend === "worsening" ||
-    item.supportNeeded === "executive_decision" ||
-    item.supportNeeded === "budget",
-  );
+function attentionCount(phase, id) {
+  return attentionSignals().filter((item) => item.phase === phase && item.relatedId === id).length;
 }
 
-function projectDetail(caseId) {
-  return state.projectDetails.find((detail) => detail.caseId === caseId) || {};
+function relatedSignals(phase, id) {
+  return state.signals.filter((item) => item.phase === phase && item.relatedId === id);
 }
 
-function routineDetail(caseId) {
-  return state.routineDetails.find((detail) => detail.caseId === caseId) || {};
+function relatedRequestHistories(requestId) {
+  return state.requestHistories.filter((item) => item.requestId === requestId).sort((a, b) => b.date.localeCompare(a.date));
 }
 
-function findCase(id) {
-  return state.cases.find((item) => item.id === id);
+function relatedEstimates(requestId) {
+  return state.estimates.filter((item) => item.requestId === requestId).sort((a, b) => b.version - a.version);
+}
+
+function relatedEstimateHistories(estimateId) {
+  return state.estimateHistories.filter((item) => item.estimateId === estimateId).sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function relatedProjects(requestId) {
+  return state.projects.filter((item) => item.requestId === requestId);
+}
+
+function relatedProjectUpdates(projectId) {
+  return state.projectUpdates.filter((item) => item.projectId === projectId).sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function relatedProjectPlans(projectId) {
+  return (state.projectPlans || [])
+    .filter((item) => item.projectId === projectId)
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+function nextProjectPlan(projectId) {
+  const plans = relatedProjectPlans(projectId).filter((item) => item.status !== "done");
+  return plans.find((item) => item.date >= TODAY_ISO) || plans[0] || null;
+}
+
+function relatedOperationHistories(operationSystemId) {
+  return state.operationHistories.filter((item) => item.operationSystemId === operationSystemId).sort((a, b) => b.date.localeCompare(a.date));
+}
+
+function findRequest(id) {
+  return state.requests.find((item) => item.id === id);
+}
+
+function findEstimate(id) {
+  return state.estimates.find((item) => item.id === id);
+}
+
+function findProject(id) {
+  return state.projects.find((item) => item.id === id);
+}
+
+function findOperation(id) {
+  return state.operationSystems.find((item) => item.id === id);
 }
 
 function findSignal(id) {
-  return state.signals.find((signal) => signal.id === id);
+  return state.signals.find((item) => item.id === id);
 }
 
-function findRelatedCase(selectedCaseId, text) {
-  if (selectedCaseId) return findCase(selectedCaseId);
-  return findRelatedCaseCandidates(text, "other")[0] || null;
+function findRelatedObject(phase, id) {
+  if (phase === "request") return findRequest(id);
+  if (phase === "estimate") return findEstimate(id);
+  if (phase === "project") return findProject(id);
+  if (phase === "operation") return findOperation(id);
+  return null;
 }
 
-function findRelatedCaseCandidates(text, category) {
-  const normalized = String(text || "");
-  return state.cases
-    .filter((item) => {
-      if (normalized && (normalized.includes(item.caseName) || item.caseName.includes(normalized))) return true;
-      const detail = item.caseType === "project" ? projectDetail(item.id) : routineDetail(item.id);
-      if (item.caseType === "project" && detail.customerName && normalized.includes(detail.customerName)) return true;
-      if (item.caseType === "routine" && detail.submitTo && normalized.includes(detail.submitTo)) return true;
-      if (category === "deadline" || category === "approval") return item.caseType === "routine";
-      if (["profitability", "estimate", "staffing", "quality", "customer", "schedule"].includes(category)) return item.caseType === "project";
-      return false;
-    })
-    .slice(0, 4);
+function requestTitle(requestId) {
+  return findRequest(requestId)?.title || "関連相談なし";
 }
 
-function recommendedSignalReport(signal) {
-  if (signal.riskScore >= 85 || /幹部会|二桁億円|赤字|経営判断/.test(signal.attentionReason || "")) return "幹部会";
-  if (signal.riskScore >= 70 || signal.relatedCaseId) return "本部基幹職会議";
-  return "課内会議";
+function defaultSignalTarget() {
+  if (state.signalDraftTarget) return state.signalDraftTarget;
+  const project = findProject(state.selectedProjectId);
+  if (project) return { phase: "project", relatedId: project.id, department: project.department };
+  const request = findRequest(state.selectedRequestId);
+  return { phase: "request", relatedId: request?.id || "", department: request?.department || departments[0] };
 }
 
-function reportReason(item) {
-  if (item.status === "critical") return "総合状態が危険";
-  if (item.trend === "worsening") return "推移が悪化";
-  if (item.supportNeeded === "executive_decision") return "経営判断が必要";
-  if (item.supportNeeded === "budget") return "予算支援が必要";
-  return "上位報告候補";
+function aiRequestSummary(request) {
+  const estimates = relatedEstimates(request.id);
+  const signals = attentionCount("request", request.id);
+  const estimateText = estimates.length ? `見積は${estimates.length}版まで発生しています。` : "見積はまだ未作成です。";
+  const signalText = signals ? `要注意シグナルが${signals}件あり、上位層の早期確認候補です。` : "要注意シグナルは現時点で少ない状態です。";
+  return `${request.title}は${labels.background[request.background]}を背景とする${labels.roughSize[request.roughSize]}規模の相談です。${estimateText}${signalText} 次は「${request.nextAction}」です。`;
 }
 
-function amountOrDeadline(item) {
-  if (item.caseType === "project") return formatCurrency(projectDetail(item.id).contractAmount || 0);
-  return routineDetail(item.id).deadline || "";
+function pseudoEstimateSupport(estimate) {
+  const weak = estimate.explanationQuality === "weak";
+  return {
+    similar: "A社基幹システム更改、販売管理システム更改、会計システム法改正対応",
+    missingAssumptions: weak ? "外部連携数、移行データ量、J-SOX対象範囲、利用部門数" : "運用変更範囲と並行稼働期間",
+    questions: "対象機能数、現行データ量、移行リハーサル回数、監査証跡の保存期間を確認してください。",
+    wbs: "要件確認、基本設計、詳細設計、移行設計、開発、テスト、切替、監査証跡整備",
+    explanation: "本見積は、現行システムの機能数、外部連携数、利用部門数、および過去の類似案件実績を前提に算出しています。現時点では要件が未確定のため、概算見積として一定の変動可能性があります。特にデータ移行、外部連携、J-SOX対応範囲については、詳細確認後に再見積が必要です。",
+    exclusions: "追加帳票、周辺システム改修、長期並行稼働、データクレンジング、運用部門の教育費用",
+    weakPoints: weak ? "金額根拠、工数根拠、除外事項、リスク係数" : "運用変更と監査対応範囲",
+  };
 }
 
-function axisLabel(caseType, key) {
-  const project = {
+function aiProjectSummary(project) {
+  const risky = [
+    ["進捗", project.scheduleStatus],
+    ["採算", project.profitabilityStatus],
+    ["品質", project.qualityStatus],
+    ["要員", project.staffingStatus],
+    ["顧客", project.customerStatus],
+  ].filter(([, level]) => level !== "normal");
+  const axes = risky.length ? risky.map(([axis, level]) => `${axis}:${labels.statusLevel[level]}`).join("、") : "全軸おおむね正常";
+  return `${project.title}は総合状態が${labels.overallStatus[project.overallStatus]}、推移は${labels.trend[project.trend]}です。注意軸は${axes}です。要注意シグナルと更新履歴から、次回報告先は${labels.reportTo[project.nextReportTo]}が妥当です。`;
+}
+
+function aiOperationSummary(system) {
+  const concerns = [];
+  if (system.isJSOX && system.auditTaskCount >= 10) concerns.push("J-SOX監査対応が重い");
+  if (system.inquiryCount >= 30) concerns.push("問い合わせが多い");
+  if (system.dependencyRisk === "high") concerns.push("属人化リスクが高い");
+  if (system.successorRisk === "high") concerns.push("後継者リスクが高い");
+  return concerns.length
+    ? `${system.systemName}は${concerns.join("、")}状態です。次アクションは「${system.nextAction}」です。`
+    : `${system.systemName}は安定運用です。通常保守の履歴を継続して蓄積します。`;
+}
+
+function runPseudoAiForProjectUpdate(project, comment) {
+  const category = inferSignalCategory(comment);
+  const axisPatch = inferProjectAxisPatch(comment);
+  const reportTo = recommendReportTo(project.overallStatus, project.trend, project.supportNeeded || "none");
+  const signalTitle = project.overallStatus === "critical" || project.trend === "worsening" || category !== "other"
+    ? `${project.title}の更新から要注意候補`
+    : "現時点では要注意候補なし";
+  return {
+    projectId: project.id,
+    summary: summarizeText(comment),
+    category,
+    axisPatch,
+    axisMessage: describeProjectAxisPatch(axisPatch),
+    signalTitle,
+    reportTo,
+    nextCheck: nextCheckPoint(category),
+  };
+}
+
+function inferProjectAxisPatch(text) {
+  const level = /危険|赤字|大幅|遅延|未合意|障害|不足/.test(text) ? "critical" : "attention";
+  return {
+    profitabilityStatus: /採算|赤字|利益|追加見積|工数超過|未合意/.test(text) ? level : undefined,
+    scheduleStatus: /納期|遅延|スケジュール|期限|工程/.test(text) ? level : undefined,
+    qualityStatus: /品質|不具合|障害|テスト|手戻り/.test(text) ? level : undefined,
+    staffingStatus: /要員|人手不足|兼務|負荷|PM|不足/.test(text) ? level : undefined,
+    customerStatus: /顧客|依頼元|承認|合意|指摘/.test(text) ? level : undefined,
+  };
+}
+
+function applyProjectAxis(project, axisPatch) {
+  Object.entries(axisPatch).forEach(([key, value]) => {
+    if (value) project[key] = value;
+  });
+}
+
+function describeProjectAxisPatch(axisPatch) {
+  const axisNames = {
     profitabilityStatus: "採算",
     scheduleStatus: "進捗",
     qualityStatus: "品質",
     staffingStatus: "要員",
     customerStatus: "顧客",
   };
-  const routine = {
-    deadlineStatus: "期限",
-    processStatus: "工程",
-    approvalStatus: "承認",
-    responseStatus: "回答",
-    qualityStatus: "品質",
-  };
-  return caseType === "project" ? project[key] || key : routine[key] || key;
+  const entries = Object.entries(axisPatch).filter(([, value]) => value);
+  if (!entries.length) return "状態軸への明確な変化は検出されませんでした。";
+  return entries.map(([key, value]) => `${axisNames[key]}:${labels.statusLevel[value]}`).join("、");
 }
 
-function aiCaseSummary(item, signals) {
-  const signalText = signals.length ? `関連シグナルは${signals.length}件、要注意は${signals.filter((signal) => signal.isAttentionSignal).length}件です。` : "関連シグナルはまだ少ない状態です。";
-  if (item.caseType === "project") {
-    const detail = projectDetail(item.id);
-    return `${item.caseName}は${labels.overallStatus[item.status]}、推移は${labels.trend[item.trend]}です。${signalText} 進捗・採算・品質・要員・顧客のうち、${renderPlainCriticalAxes(item, detail)}を優先確認してください。`;
+function inferSignalCategory(text) {
+  const rules = [
+    ["aging", ["老朽化", "更改", "保守期限"]],
+    ["estimate", ["見積", "概算", "根拠", "前提", "除外", "再見積"]],
+    ["profitability", ["採算", "赤字", "利益", "工数超過", "追加見積", "未合意"]],
+    ["staffing", ["要員", "人手不足", "兼務", "パートナー", "スキル", "PM不足"]],
+    ["schedule", ["納期", "遅延", "期限", "スケジュール", "工程"]],
+    ["quality", ["不具合", "品質", "テスト", "障害", "手戻り"]],
+    ["customer", ["顧客", "依頼元", "指摘", "承認", "調整", "合意"]],
+    ["audit", ["監査", "J-SOX", "証跡", "統制"]],
+    ["dependency", ["属人化", "後継者", "特定担当者"]],
+    ["operation", ["問い合わせ", "小改修", "運用負荷", "保守"]],
+    ["organization", ["方針変更", "組織", "負荷集中"]],
+  ];
+  const normalized = String(text || "");
+  const hit = rules.find(([, keywords]) => keywords.some((keyword) => normalized.includes(keyword)));
+  return hit ? hit[0] : "other";
+}
+
+function calculateRiskScore({ severity, frequency, category, text, related }) {
+  let score = 0;
+  if (severity === "high") score += 30;
+  if (severity === "medium") score += 15;
+  if (frequency === "repeated") score += 20;
+  if (frequency === "sometimes") score += 10;
+  if (["profitability", "staffing", "customer", "audit", "dependency"].includes(category)) score += 20;
+  if (related?.roughSize === "large" || related?.roughSize === "very_large" || related?.amount >= 500000000) score += 10;
+  if (related?.isJSOX) score += 10;
+  if (/遅延|赤字|未提出|未合意|承認滞留|障害|負荷集中|危険|指摘/.test(text)) score += 20;
+  return Math.max(0, Math.min(100, score));
+}
+
+function buildAttentionReason(category, riskScore, text) {
+  const reasons = [`リスクスコア${riskScore}点`];
+  if (category === "profitability") reasons.push("採算悪化に関係");
+  if (category === "staffing") reasons.push("要員・スキルに関係");
+  if (category === "estimate") reasons.push("見積根拠または前提条件に関係");
+  if (category === "audit") reasons.push("監査対応に関係");
+  if (category === "dependency") reasons.push("属人化に関係");
+  if (/遅延|未合意|指摘|障害/.test(text)) reasons.push("明確な悪化キーワードあり");
+  return reasons.join(" / ");
+}
+
+function bumpAttentionCount(signal) {
+  if (!signal.isAttention) return;
+  const target = findRelatedObject(signal.phase, signal.relatedId);
+  if (target && typeof target.attentionSignalCount === "number") {
+    target.attentionSignalCount += 1;
+    target.lastUpdatedAt = TODAY_ISO;
   }
-  const detail = routineDetail(item.id);
-  return `${item.caseName}は${labels.overallStatus[item.status]}、推移は${labels.trend[item.trend]}です。${signalText} 期限・工程・承認・回答・品質のうち、${renderPlainCriticalAxes(item, detail)}を優先確認してください。`;
 }
 
-function renderPlainCriticalAxes(item, detail) {
-  const entries = item.caseType === "project"
-    ? [
-        ["進捗", detail.scheduleStatus],
-        ["採算", detail.profitabilityStatus],
-        ["品質", detail.qualityStatus],
-        ["要員", detail.staffingStatus],
-        ["顧客", detail.customerStatus],
-      ]
-    : [
-        ["期限", detail.deadlineStatus],
-        ["工程", detail.processStatus],
-        ["承認", detail.approvalStatus],
-        ["回答", detail.responseStatus],
-        ["品質", detail.qualityStatus],
-      ];
-  const risky = entries.filter(([, level]) => level !== "normal").map(([name, level]) => `${name}:${labels.statusLevel[level]}`);
-  return risky.length ? risky.join("、") : "現時点では全軸正常";
+function inferNextAction(text, phase) {
+  const category = inferSignalCategory(text);
+  if (phase === "operation") {
+    if (category === "audit") return "監査対応の担当分散と証跡整理";
+    if (category === "dependency") return "後継者と手順書の整備";
+    if (category === "operation") return "問い合わせと小改修の優先順位整理";
+    return "次回運用会議で継続確認";
+  }
+  if (category === "estimate") return "見積前提と除外事項を確認";
+  if (category === "staffing") return "必要スキルと要員確保を確認";
+  if (category === "audit") return "J-SOX対象範囲と証跡要件を確認";
+  return "次回確認事項を整理";
 }
 
-function countDepartmentRisk() {
-  const counts = new Map();
-  state.cases.forEach((item) => {
-    if (item.status === "attention" || item.status === "critical") {
-      counts.set(item.department, (counts.get(item.department) || 0) + 1);
-    }
-  });
-  return [...counts.entries()]
-    .map(([label, value]) => ({ label, value }))
-    .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label, "ja"));
+function recommendReportTo(status, trend, supportNeeded) {
+  if (status === "critical" || supportNeeded === "executive_decision" || supportNeeded === "budget") return "executive";
+  if (status === "attention" || trend === "worsening" || supportNeeded !== "none") return "division";
+  return "none";
 }
 
-function countBy(items, selector) {
-  const counts = new Map();
-  items.forEach((item) => {
-    const label = selector(item) || "未設定";
-    counts.set(label, (counts.get(label) || 0) + 1);
-  });
-  return [...counts.entries()]
-    .map(([label, value]) => ({ label, value }))
-    .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label, "ja"));
-}
-
-function historyTrendBars(histories) {
-  const counts = countBy(histories, (history) => labels.overallStatus[history.overallStatus]);
-  return counts.length ? counts : [{ label: "履歴なし", value: 0 }];
+function nextCheckPoint(category) {
+  if (category === "profitability" || category === "estimate") return "追加見積、工数見通し、契約前提の変更有無";
+  if (category === "staffing") return "PM兼務、主要工程の担当余力、支援要員の要否";
+  if (category === "quality") return "同種不具合の再発状況とリリース影響";
+  if (category === "customer") return "顧客合意、承認遅れ、上位者同席の必要性";
+  if (category === "audit") return "監査証跡、統制範囲、特定担当者への集中";
+  return "次回更新で変化があった状態軸";
 }
 
 function scoreClass(score) {
@@ -2405,6 +4002,344 @@ function scoreClass(score) {
   if (Number(score) >= 70) return "high";
   if (Number(score) >= 40) return "medium";
   return "low";
+}
+
+function riskTone(risk) {
+  if (risk === "high") return "high";
+  if (risk === "medium") return "medium";
+  return "low";
+}
+
+function planTone(status) {
+  if (status === "delayed") return "high";
+  if (status === "at_risk") return "medium";
+  if (status === "done") return "low";
+  return "neutral";
+}
+
+function buildDashboardMatrix() {
+  const months = buildDashboardMonths(TODAY_ISO);
+  const rowDefs = dashboardRowDefinitions();
+  const rows = rowDefs.map((def) => ({
+    ...def,
+    months: months.map(() => (def.blank ? null : emptyDashboardMetrics())),
+    forecastSales: def.blank ? null : 0,
+  }));
+  const rowByKey = new Map(rows.map((row) => [row.key, row]));
+
+  months.forEach((month, monthIndexValue) => {
+    const consult = monthlyConsultEstimateMetrics(month);
+    const project = monthlyProjectMetrics(month);
+    const operation = monthlyOperationMetrics(month, monthIndexValue);
+
+    rowByKey.get("consultEstimate").months[monthIndexValue] = consult;
+    addMetrics(rowByKey.get("requirements").months[monthIndexValue], scaleDashboardMetrics(project, 0.18));
+    addMetrics(rowByKey.get("design").months[monthIndexValue], scaleDashboardMetrics(project, 0.26));
+    addMetrics(rowByKey.get("codingTest").months[monthIndexValue], scaleDashboardMetrics(project, 0.34));
+    addMetrics(rowByKey.get("migrationCare").months[monthIndexValue], scaleDashboardMetrics(project, 0.22));
+    rowByKey.get("operation").months[monthIndexValue] = operation;
+
+    const total = emptyDashboardMetrics();
+    ["consultEstimate", "requirements", "design", "codingTest", "migrationCare", "operation"].forEach((key) => {
+      addMetrics(total, rowByKey.get(key).months[monthIndexValue]);
+    });
+    rowByKey.get("total").months[monthIndexValue] = total;
+  });
+
+  rows.forEach((row) => {
+    if (row.blank) return;
+    row.forecastSales = row.months.reduce((sum, metrics) => sum + (metrics?.sales || 0), 0);
+  });
+
+  return {
+    months,
+    rows,
+    forecastLabel: `${new Date(TODAY_ISO).getFullYear()}年見込`,
+    attention: [
+      { label: "相談・見積", count: attentionSignals().filter((signal) => signal.phase === "request" || signal.phase === "estimate").length, view: "attention-signals" },
+      { label: "プロジェクト", count: attentionSignals().filter((signal) => signal.phase === "project").length, view: "attention-signals" },
+      { label: "保守・運用", count: attentionSignals().filter((signal) => signal.phase === "operation").length, view: "attention-signals" },
+    ],
+  };
+}
+
+function dashboardRowDefinitions() {
+  return [
+    { key: "consultEstimate", label: "相談・見積", kind: "primary-row" },
+    { key: "project", label: "プロジェクト", kind: "group-row", blank: true },
+    { key: "requirements", label: "　要件定義", kind: "sub-row" },
+    { key: "design", label: "　設計", kind: "sub-row" },
+    { key: "codingTest", label: "　コーディング・テスト", kind: "sub-row" },
+    { key: "migrationCare", label: "　本番移行・ハイパーケア", kind: "sub-row" },
+    { key: "operation", label: "保守・運用", kind: "primary-row" },
+    { key: "total", label: "合計", kind: "total-row" },
+  ];
+}
+
+function buildDashboardMonths(todayIso) {
+  const [year, month] = String(todayIso).split("-").map(Number);
+  const months = [];
+  for (let currentMonth = month; currentMonth <= 12; currentMonth += 1) {
+    months.push({
+      key: `${year}-${String(currentMonth).padStart(2, "0")}`,
+      label: `${currentMonth}/1/${String(year).slice(2)}`,
+      year,
+      month: currentMonth,
+      startMonthIndex: monthIndex(year, currentMonth),
+      endMonthIndex: monthIndex(year, currentMonth) + 1,
+    });
+  }
+  return months;
+}
+
+function monthlyConsultEstimateMetrics(month) {
+  const metrics = emptyDashboardMetrics();
+  (state.requests || []).forEach((request) => {
+    if (request.status === "closed" || request.status === "on_hold") return;
+    const activeMonths = requestTimingMonths(request.desiredTiming);
+    if (!activeMonths.includes(month.startMonthIndex)) return;
+    const amount = latestEstimateAmount(request.id) || roughRequestAmount(request.roughSize);
+    const monthlyRevenue = amount / Math.max(activeMonths.length, 1);
+    const latestEstimate = relatedEstimates(request.id)[0];
+    metrics.sales += toDashboardAmount(monthlyRevenue);
+    metrics.count += 1;
+    metrics.employee += latestEstimate ? Math.max(1, Math.round(latestEstimate.personMonths / Math.max(activeMonths.length, 1))) : roughEmployeeCount(request.roughSize);
+    metrics.vendor += Math.max(1, Math.round(toDashboardAmount(monthlyRevenue) * 0.35));
+  });
+  return normalizeDashboardMetrics(metrics);
+}
+
+function monthlyProjectMetrics(month) {
+  const metrics = emptyDashboardMetrics();
+  (state.projects || []).forEach((project) => {
+    const revenue = projectRevenueInPeriod(project, month);
+    if (revenue <= 0) return;
+    const sales = toDashboardAmount(revenue);
+    metrics.sales += sales;
+    metrics.count += 1;
+    metrics.employee += Math.max(1, Math.round(sales / 28));
+    metrics.vendor += Math.max(1, Math.round(sales / 8));
+  });
+  return normalizeDashboardMetrics(metrics);
+}
+
+function monthlyOperationMetrics(month, offset) {
+  const metrics = emptyDashboardMetrics();
+  (state.operationSystems || []).forEach((system) => {
+    const monthlyRevenue = (operationSemiannualRevenue(system) / 6) * (1 + offset * 0.01);
+    const sales = toDashboardAmount(monthlyRevenue);
+    metrics.sales += sales;
+    metrics.count += 1;
+    metrics.employee += Math.max(1, Math.round((system.inquiryCount + system.smallChangeCount + system.auditTaskCount) / 12));
+    metrics.vendor += system.dependencyRisk === "high" ? 2 : 1;
+  });
+  return normalizeDashboardMetrics(metrics);
+}
+
+function requestTimingMonths(desiredTiming) {
+  const text = String(desiredTiming || "");
+  const yearMatch = text.match(/20\d{2}/);
+  if (!yearMatch) return [];
+  const year = Number(yearMatch[0]);
+  const startMonth = text.includes("下期") ? 7 : 1;
+  const endMonth = text.includes("上期") ? 6 : 12;
+  const months = [];
+  for (let month = startMonth; month <= endMonth; month += 1) {
+    months.push(monthIndex(year, month));
+  }
+  return months;
+}
+
+function emptyDashboardMetrics() {
+  return { sales: 0, count: 0, employee: 0, vendor: 0 };
+}
+
+function scaleDashboardMetrics(metrics, ratio) {
+  return normalizeDashboardMetrics({
+    sales: metrics.sales * ratio,
+    count: metrics.count * ratio,
+    employee: metrics.employee * ratio,
+    vendor: metrics.vendor * ratio,
+  });
+}
+
+function addMetrics(target, source) {
+  if (!target || !source) return target;
+  target.sales += source.sales || 0;
+  target.count += source.count || 0;
+  target.employee += source.employee || 0;
+  target.vendor += source.vendor || 0;
+  return normalizeDashboardMetrics(target);
+}
+
+function normalizeDashboardMetrics(metrics) {
+  return {
+    sales: Math.round(metrics.sales || 0),
+    count: Math.round(metrics.count || 0),
+    employee: Math.round(metrics.employee || 0),
+    vendor: Math.round(metrics.vendor || 0),
+  };
+}
+
+function toDashboardAmount(value) {
+  return Math.round(Number(value || 0) / 1000000);
+}
+
+function roughEmployeeCount(size) {
+  const counts = { small: 1, medium: 2, large: 4, very_large: 8 };
+  return counts[size] || 2;
+}
+
+function formatDashboardNumber(value) {
+  if (value === null || value === undefined || Number(value) === 0) return "";
+  return Number(value).toLocaleString("ja-JP");
+}
+
+function buildRevenueForecast() {
+  const periods = buildHalfYearPeriods(TODAY_ISO, 7).map((period) => ({
+    ...period,
+    consultEstimate: 0,
+    project: 0,
+    operation: 0,
+    total: 0,
+  }));
+  const periodMap = new Map(periods.map((period) => [period.key, period]));
+
+  (state.requests || []).forEach((request) => {
+    const amount = latestEstimateAmount(request.id) || roughRequestAmount(request.roughSize);
+    const allocations = allocateRequestAmount(request.desiredTiming, amount);
+    allocations.forEach(({ key, value }) => {
+      const period = periodMap.get(key);
+      if (period && request.status !== "closed" && request.status !== "on_hold") {
+        period.consultEstimate += value;
+      }
+    });
+  });
+
+  (state.projects || []).forEach((project) => {
+    periods.forEach((period) => {
+      period.project += projectRevenueInPeriod(project, period);
+    });
+  });
+
+  (state.operationSystems || []).forEach((system) => {
+    const base = operationSemiannualRevenue(system);
+    periods.forEach((period, index) => {
+      period.operation += base * (1 + index * 0.02);
+    });
+  });
+
+  periods.forEach((period) => {
+    period.consultEstimate = roundRevenue(period.consultEstimate);
+    period.project = roundRevenue(period.project);
+    period.operation = roundRevenue(period.operation);
+    period.total = roundRevenue(period.consultEstimate + period.project + period.operation);
+  });
+
+  const firstTotal = periods[0]?.total || 0;
+  const lastTotal = periods[periods.length - 1]?.total || 0;
+  const changeAmount = lastTotal - firstTotal;
+  const changeRate = firstTotal ? changeAmount / firstTotal : 0;
+  const direction = changeRate > 0.05 ? "increase" : changeRate < -0.05 ? "decrease" : "flat";
+
+  return { periods, direction, changeAmount, changeRate };
+}
+
+function buildHalfYearPeriods(todayIso, count) {
+  const [currentYear, currentMonth] = String(todayIso).split("-").map(Number);
+  let year = currentYear;
+  let half = currentMonth <= 6 ? 1 : 2;
+  const periods = [];
+
+  for (let index = 0; index < count; index += 1) {
+    const startMonth = half === 1 ? 1 : 7;
+    const endMonth = half === 1 ? 6 : 12;
+    periods.push({
+      key: `${year}-H${half}`,
+      label: `${year}年${half === 1 ? "上期" : "下期"}`,
+      startMonthIndex: monthIndex(year, startMonth),
+      endMonthIndex: monthIndex(year, endMonth) + 1,
+    });
+    if (half === 1) {
+      half = 2;
+    } else {
+      year += 1;
+      half = 1;
+    }
+  }
+
+  return periods;
+}
+
+function latestEstimateAmount(requestId) {
+  const estimates = relatedEstimates(requestId);
+  return estimates[0]?.amount || 0;
+}
+
+function roughRequestAmount(size) {
+  const amounts = {
+    small: 12000000,
+    medium: 30000000,
+    large: 90000000,
+    very_large: 180000000,
+  };
+  return amounts[size] || amounts.medium;
+}
+
+function allocateRequestAmount(desiredTiming, amount) {
+  const text = String(desiredTiming || "");
+  const yearMatch = text.match(/20\d{2}/);
+  if (!yearMatch || !amount) return [];
+  const year = Number(yearMatch[0]);
+  if (text.includes("上期")) return [{ key: `${year}-H1`, value: amount }];
+  if (text.includes("下期")) return [{ key: `${year}-H2`, value: amount }];
+  return [
+    { key: `${year}-H1`, value: amount / 2 },
+    { key: `${year}-H2`, value: amount / 2 },
+  ];
+}
+
+function projectRevenueInPeriod(project, period) {
+  const start = parseYearMonth(project.startDate);
+  const end = parseYearMonth(project.plannedEndDate);
+  if (!start || !end || !project.amount) return 0;
+  const projectStart = monthIndex(start.year, start.month);
+  const projectEnd = monthIndex(end.year, end.month) + 1;
+  const totalMonths = Math.max(projectEnd - projectStart, 1);
+  const overlapMonths = Math.max(0, Math.min(projectEnd, period.endMonthIndex) - Math.max(projectStart, period.startMonthIndex));
+  return project.amount * (overlapMonths / totalMonths);
+}
+
+function operationSemiannualRevenue(system) {
+  const base = 6000000;
+  const inquiry = (system.inquiryCount || 0) * 100000;
+  const incident = (system.incidentCount || 0) * 1200000;
+  const smallChange = (system.smallChangeCount || 0) * 800000;
+  const audit = (system.auditTaskCount || 0) * 300000;
+  const jsox = system.isJSOX ? 3000000 : 0;
+  return base + inquiry + incident + smallChange + audit + jsox;
+}
+
+function parseYearMonth(value) {
+  const match = String(value || "").match(/^(20\d{2})-(\d{1,2})/);
+  if (!match) return null;
+  return { year: Number(match[1]), month: Number(match[2]) };
+}
+
+function monthIndex(year, month) {
+  return year * 12 + month - 1;
+}
+
+function roundRevenue(value) {
+  return Math.round(Number(value || 0) / 1000000) * 1000000;
+}
+
+function revenueTrendBadge(value, previous) {
+  if (!previous) return badge("基準", "neutral");
+  const rate = (value - previous) / previous;
+  if (rate > 0.05) return badge(`増加 ${formatPercent(rate)}`, "low");
+  if (rate < -0.05) return badge(`減少 ${formatPercent(Math.abs(rate))}`, "high");
+  return badge("横ばい", "neutral");
 }
 
 function formatCurrency(value) {
@@ -2417,12 +4352,22 @@ function formatCurrency(value) {
   return `${number}円`;
 }
 
-function parseAmount(value) {
-  const text = String(value || "").replace(/,/g, "");
-  const number = Number((text.match(/\d+(\.\d+)?/) || ["0"])[0]);
-  if (text.includes("億")) return Math.round(number * 100000000);
-  if (text.includes("万")) return Math.round(number * 10000);
-  return Math.round(number);
+function formatOku(value) {
+  const number = Number(value || 0);
+  return `${Number.isInteger(number) ? number.toFixed(0) : number.toFixed(1)}億円`;
+}
+
+function formatOkuSigned(value) {
+  const number = Number(value || 0);
+  const abs = Math.abs(number);
+  const text = `${Number.isInteger(abs) ? abs.toFixed(0) : abs.toFixed(1)}億円`;
+  if (number < 0) return `▲${text}`;
+  if (number > 0) return `+${text}`;
+  return text;
+}
+
+function formatPercent(value) {
+  return `${Math.round(Number(value || 0) * 100)}%`;
 }
 
 function summarizeText(text) {
@@ -2430,19 +4375,12 @@ function summarizeText(text) {
   return compact.length > 76 ? `${compact.slice(0, 76)}...` : compact;
 }
 
-function nextSignalId() {
-  const max = state.signals.reduce((current, signal) => Math.max(current, Number((signal.id.match(/S-(\d+)/) || [0, 0])[1])), 0);
-  return `S-${String(max + 1).padStart(3, "0")}`;
-}
-
-function nextHistoryId() {
-  return `H-${String(Date.now()).slice(-8)}-${state.histories.length + 1}`;
-}
-
-function nextCaseId(prefix) {
-  const regexp = prefix === "C-P" ? /C-P(\d+)/ : /C-R(\d+)/;
-  const max = state.cases.reduce((current, item) => Math.max(current, Number((item.id.match(regexp) || [0, 0])[1])), 0);
-  return `${prefix}${String(max + 1).padStart(3, "0")}`;
+function nextId(prefix, items) {
+  const max = items.reduce((current, item) => {
+    const match = String(item.id || "").match(/(\d+)$/);
+    return Math.max(current, match ? Number(match[1]) : 0);
+  }, 0);
+  return `${prefix}-${String(max + 1).padStart(3, "0")}`;
 }
 
 function renderOptions(values, selected) {
@@ -2455,6 +4393,17 @@ function renderEnumOptions(map, selected) {
 
 function unique(values) {
   return [...new Set(values)].filter(Boolean).sort((a, b) => a.localeCompare(b, "ja"));
+}
+
+function countBy(items, selector) {
+  const counts = new Map();
+  items.forEach((item) => {
+    const label = selector(item) || "未設定";
+    counts.set(label, (counts.get(label) || 0) + 1);
+  });
+  return [...counts.entries()]
+    .map(([label, value]) => ({ label, value }))
+    .sort((a, b) => b.value - a.value || a.label.localeCompare(b.label, "ja"));
 }
 
 function escapeHtml(value) {
